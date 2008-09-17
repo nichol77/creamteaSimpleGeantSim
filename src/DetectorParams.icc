@@ -1,0 +1,7 @@
+
+   fNumScintPlanes=4;
+   fScintPlaneGap=2.*cm;
+   fScintPlaneLength=boxSize*m;
+   fScintPlaneWidth=0.5*cm;
+   fNumScintStrips=50;    
+   fRotate90=1;
