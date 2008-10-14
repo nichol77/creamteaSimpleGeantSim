@@ -4,5 +4,5 @@
 #pragma link off all functions;
 
 
-#pragma link C++ class data_t+;
+#pragma link C++ class ScintHitInfo+;
 #endif

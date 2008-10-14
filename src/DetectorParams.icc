@@ -1,7 +1,9 @@
+#include "DetectorDefs.hh"
 
-   fNumScintPlanes=4;
-   fScintPlaneGap=2.*cm;
-   fScintPlaneLength=boxSize*m;
-   fScintPlaneWidth=0.5*cm;
-   fNumScintStrips=50;    
-   fRotate90=1;
+fNumScintPlanes=PLANES_PER_SIDE;
+fScintPlaneGap=GAP_BETWEEN_PLANES_CM*cm;
+fScintPlaneLength=SIDELENGTH*m;
+fScintPlaneWidth=PLANE_WIDTH_CM*cm;			
+fNumScintStrips=STRIPS_PER_PLANE;						
+fRotate90=ROTATE_EVERY_PLANE;									
+fTotNumScintStrips=2*fNumScintPlanes*fNumScintStrips;				

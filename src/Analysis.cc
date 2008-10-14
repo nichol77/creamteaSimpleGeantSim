@@ -28,6 +28,7 @@
 #include <TPaveLabel.h>
 #include <TPostScript.h>
 #include <TGraph.h>
+#include <TClonesArray.h>
 
 //GEANT4 
 #include "globals.hh"
@@ -43,8 +44,9 @@
 #include "G4TransportationManager.hh"
 #include "G4Run.hh"
 
-//JDet
-#include "data_t.hh"
+//simpleGeantSim
+#include "ScintHitInfo.hh"
+#include "ScintillatorHit.hh"
 #include "Analysis.hh"
 #include "PrimaryGeneratorAction.hh"
 #include "DataInput.hh"
@@ -63,7 +65,8 @@ Analysis::Analysis()
 #ifdef G4ANALYSIS_USE
 #endif
 
-  g4data = new data_t();
+#include "DetectorParams.icc"
+
 }
 //----------------------------------------------------------------------
 
@@ -85,11 +88,15 @@ Analysis::~Analysis()
 
 void Analysis::book(){
   if(Data->CreateNtuple){
+    fScintHitArray = new TClonesArray("ScintHitInfo",1000);
+
     G4cout << "Creating ntuple: "<< Data->NtupleName << G4endl;
-    G4String name = Form("%s.root", Data->NtupleName.c_str());
-    Ntuple = new TFile(name.c_str(), "RECREATE");
-    tree = new TTree("data","JDet ntuple");
-    tree->Branch("data", "data_t", &g4data, 32000, 1);
+    //    G4String name = Form("%s.root", Data->NtupleName.c_str());
+    fScintFile = new TFile(Data->NtupleName.c_str(), "RECREATE");
+    fScintTree = new TTree("scintTree","Tree of Scintillator Stuff");
+    fScintTree->Branch("run",&fRun,"run/I");
+    fScintTree->Branch("event",&fEvent,"event/I");
+    fScintTree->Branch("ScintHitInfo","TClonesArray",&fScintHitArray,32000,1);
   }
 }
 
@@ -108,10 +115,9 @@ Analysis* Analysis::getInstance()
 void Analysis::finish()
 {  
   if (Data->CreateNtuple){
-    Ntuple->cd();
-    tree->Write();
-    Ntuple->Close();
-    delete Ntuple;
+    fScintFile->cd();
+    fScintTree->AutoSave();
+    fScintFile->Close();
   }
 }
 
@@ -120,32 +126,36 @@ void Analysis::finish()
 
 //----------------------------------------------------------------------
 // Fill the created Ntuple. 
-void Analysis::FillNtuple(const G4Track& track,const int a_box_index)
+void Analysis::FillTree(const ScintillatorHitsCollection *hitCol) 
 {
   if (!Data->CreateNtuple) return;
 
+  TClonesArray &theHits = *fScintHitArray;
+  Int_t countHits=0;
+
+
   G4RunManager* pRunManager = G4RunManager::GetRunManager();
+  fRun = pRunManager->GetCurrentRun()->GetRunID();
+  fEvent = pRunManager->GetCurrentEvent()->GetEventID();
 
-  g4data->run = pRunManager->GetCurrentRun()->GetRunID();
-  g4data->evtno = pRunManager->GetCurrentEvent()->GetEventID();
 
-  g4data->x_trk_pos = track.GetPosition()[0];
-  g4data->y_trk_pos = track.GetPosition()[1];
-  g4data->z_trk_pos = track.GetPosition()[2];
+  for(int i=0;i<fTotNumScintStrips;i++) {
+    ScintillatorHit* aHit = (*hitCol)[i];
+    //Check if there was a hit
+    if((aHit->GetLogV())) {
+      Double_t pos[3]={aHit->GetTruePos()[0],aHit->GetTruePos()[1],aHit->GetTruePos()[2]};
+      Int_t side=(aHit->GetPlane()/fNumScintPlanes);
+      new(theHits[countHits])
+	ScintHitInfo(side,aHit->GetPlane(),aHit->GetStrip(),
+		     pos,aHit->GetEdep());
+      countHits++;
+    }
+  }	  
+  if(countHits>0) {
+    fScintTree->Fill();
+    fScintHitArray->Clear();
+  }
 
-  g4data->x_p = track.GetMomentum()[0];
-  g4data->y_p = track.GetMomentum()[1];
-  g4data->z_p = track.GetMomentum()[2];
-
-  g4data->penergy = track.GetMomentum()[2];
-
-  g4data->box_index = a_box_index;
-
-  G4ParticleDefinition* particleDefinition = track.GetDefinition();
-
-  g4data->ptype = particleDefinition->GetPDGEncoding();
-
-  tree->Fill();
 }
 //----------------------------------------------------------------------
 

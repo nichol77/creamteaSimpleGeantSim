@@ -28,13 +28,15 @@
 //
 #include "ScintillatorSD.hh"
 #include "ScintillatorHit.hh"
+#include "Analysis.hh"
+
 #include "G4HCofThisEvent.hh"
 #include "G4TouchableHistory.hh"
 #include "G4Track.hh"
 #include "G4Step.hh"
 #include "G4SDManager.hh"
 #include "G4ios.hh"
-#include "../../global_vars.hh"
+#include "DetectorDefs.hh"
 
 ScintillatorSD::ScintillatorSD(G4String name)
 :G4VSensitiveDetector(name)
@@ -44,8 +46,8 @@ ScintillatorSD::ScintillatorSD(G4String name)
   HCID = -1;
   float boxSize = SIDELENGTH; //allows all the scintillator boxed to be scaled from here. 
   #include "DetectorParams.icc"
-  fTotNumScintStrips=2*fNumScintPlanes*fNumScintStrips;
-     
+  fCountScintHits=0;
+  hitsCollection=0;
 
 }
 
@@ -53,6 +55,8 @@ ScintillatorSD::~ScintillatorSD(){;}
 
 void ScintillatorSD::Initialize(G4HCofThisEvent*HCE)
 {
+  //  if(hitsCollection)
+  //    delete hitsCollection;
   hitsCollection = new ScintillatorHitsCollection
                    (SensitiveDetectorName,collectionName[0]);
   if(HCID<0)
@@ -66,6 +70,7 @@ void ScintillatorSD::Initialize(G4HCofThisEvent*HCE)
      }
   }
 
+  fCountScintHits=0;
 }
 
 G4bool ScintillatorSD::ProcessHits(G4Step*aStep,G4TouchableHistory* /*ROhist*/)
@@ -88,11 +93,8 @@ G4bool ScintillatorSD::ProcessHits(G4Step*aStep,G4TouchableHistory* /*ROhist*/)
 	 "av_1_impr_%d_lvScintStrip_pv_%d",
 	 &planeNum,&stripNum);
 
-  //  G4cout << edep << "\t" << thePhysical->GetName() << "\t"
-  //	 << thePos.getX() << "\t" << thePos.getY() << "\t"
-  //	 << thePos.getZ() << "\t" << planeNum << "\t" << stripNum << "\n";
   
-  int logInd=(stripNum-1) + fNumScintStrips*(planeNum-1);
+  int logInd=(stripNum) + fNumScintStrips*(planeNum-1);
 
   ScintillatorHit* aHit = (*hitsCollection)[logInd];
   // check if it is first touch
@@ -104,8 +106,17 @@ G4bool ScintillatorSD::ProcessHits(G4Step*aStep,G4TouchableHistory* /*ROhist*/)
     aTrans.Invert();
     aHit->SetRot(aTrans.NetRotation());
     aHit->SetPos(aTrans.NetTranslation());
+    aHit->SetTruePos(thePos);
+
+
+    //    G4cout << edep << "\t" << thePhysical->GetName() << "\t"
+    //	 << thePos.getX() << "\t" << thePos.getY() << "\t"
+    //	   << thePos.getZ() << "\t" << planeNum << "\t" << stripNum << "\n";
+
+    fCountScintHits++;
   }
   // add energy deposition
+  //  G4cout << aHit->GetPlane() << "\t" << aHit->GetStrip() << "\t" << thePhysical->GetName() << "\n";
   aHit->AddEdep(edep);
 
   return true;
@@ -113,12 +124,20 @@ G4bool ScintillatorSD::ProcessHits(G4Step*aStep,G4TouchableHistory* /*ROhist*/)
 
 void ScintillatorSD::EndOfEvent(G4HCofThisEvent* /*HCE*/)
 {  
-   for(int i=0;i<fTotNumScintStrips;i++) {
-      ScintillatorHit* aHit = (*hitsCollection)[i];
-      //Check if there was a hit
-      if((aHit->GetLogV())) {
-	 aHit->Print();
-      }
-   }	  
+
+  if(fCountScintHits>0) {
+    Analysis *treeMaker = Analysis::getInstance();
+    treeMaker->FillTree(hitsCollection);
+
+  //   for(int i=0;i<fTotNumScintStrips;i++) {
+//       ScintillatorHit* aHit = (*hitsCollection)[i];
+//       //Check if there was a hit
+//       if((aHit->GetLogV())) {
+// 	aHit->Print();
+//       }
+//     }	
+  }  
+  
+  
 }
 

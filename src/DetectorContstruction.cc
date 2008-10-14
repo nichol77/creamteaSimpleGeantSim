@@ -35,11 +35,11 @@
 #include "G4PVParameterised.hh"
 #include "G4PVDivision.hh"
 #include "G4SDManager.hh"
-#include "../../global_vars.hh"
+#include "DetectorDefs.hh"
 #include "globals.hh"
 
 DetectorConstruction::DetectorConstruction(){
-  Data = new DataInput();
+  Data = DataInput::GetDataInput();
   DefineMaterials();
 }
 

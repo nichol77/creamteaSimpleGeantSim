@@ -28,17 +28,19 @@
 // GEANT4 tag $Name: geant4-08-01 $
 //
 
-#include "PrimaryGeneratorAction.hh"
+#include <stdlib.h>
 
+#include "PrimaryGeneratorAction.hh"
 #include "G4Event.hh"
-#include "CosmicRayFluxParticleSource.hh"
 #include "G4ParticleTable.hh"
 #include "G4ParticleDefinition.hh"
 #include "RunManager.hh"
-#include "DataInput.hh"
 #include "globals.hh"
-#include <stdlib.h>
-#include "../../global_vars.hh"
+
+
+#include "CosmicRayFluxParticleSource.hh"
+#include "DataInput.hh"
+#include "DetectorDefs.hh"
 
 
 #define PI 3.14159265358979312

@@ -1,6 +1,6 @@
 #include "DataInput.hh"
 #include "G4ThreeVector.hh"
-#include "../../global_vars.hh"
+#include "DetectorDefs.hh"
 #include <math.h>
 
 static const G4double inch=2.54*cm;
@@ -8,7 +8,12 @@ static const G4double ft=12*2.54*cm;
 
 DataInput* DataInput::fDataInput = 0;
 
-DataInput* DataInput::GetDataInput(){return fDataInput;}
+DataInput* DataInput::GetDataInput()
+{
+  if(!fDataInput)
+    return new DataInput();
+  return fDataInput;
+}
 
 DataInput::DataInput()
 {
@@ -22,7 +27,7 @@ DataInput::DataInput()
   KillTracking = false;
   KillTrackingEnergy = .05*MeV;
   CreateNtuple = true;
-  NtupleName = "JDet_test";
+  NtupleName = "scintHits.root";
 }
 
 //----------------------------------------------------------------------

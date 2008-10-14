@@ -35,6 +35,7 @@
 #include "G4UImanager.hh"
 #include "G4UIterminal.hh"
 #include "G4UItcsh.hh"
+#include "G4String.hh"
 
 #undef G4UI_USE_XM
 
@@ -57,8 +58,7 @@
 #include "PrimaryGeneratorAction.hh"
 #include "SteppingAction.hh"
 #include "RunAction.hh"
-//#include "ExN03EventAction.hh"
-//#include "ExN03SteppingVerbose.hh"
+#include "DataInput.hh"
 
 //#define G4VIS_USE_OPENGL
 //#undef G4VIS_USE
@@ -66,7 +66,12 @@
 //----------------------------------------------------------------------
 
 int main(int argc,char** argv){
-
+  char outputName[FILENAME_MAX];
+  if(argc==3) {
+    sprintf(outputName,argv[2]);
+    DataInput *dataPtr = DataInput::GetDataInput();
+    dataPtr->NtupleName=argv[2];
+  }
   //--------------------------------------------------
   // Choose the Random engine
   CLHEP::HepRandom::setTheEngine(new CLHEP::RanecuEngine);

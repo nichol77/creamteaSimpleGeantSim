@@ -62,10 +62,11 @@ class ScintillatorHit : public G4VHit
   private:
       G4int fPlaneNum;
       G4int fStripNum;
+     G4ThreeVector fTruePos;
       G4double edep;
-      G4ThreeVector pos;
-      G4RotationMatrix rot;
-      const G4LogicalVolume* pLogV;
+      G4ThreeVector pos; //For drawing
+      G4RotationMatrix rot; //For drawing
+     const G4LogicalVolume* pLogV; //For drawing
 
   public:
       inline void SetPlane(G4int plane) { fPlaneNum=plane; }
@@ -77,6 +78,8 @@ class ScintillatorHit : public G4VHit
       inline G4double GetEdep() const { return edep; }
       inline void SetPos(G4ThreeVector xyz) { pos = xyz; }
       inline G4ThreeVector GetPos() const { return pos; }
+      inline void SetTruePos(G4ThreeVector xyz) { fTruePos = xyz; }
+      inline G4ThreeVector GetTruePos() const { return fTruePos; }
       inline void SetRot(G4RotationMatrix rmat) { rot = rmat; }
       inline G4RotationMatrix GetRot() const { return rot; }
       inline void SetLogV(G4LogicalVolume* val) { pLogV = val; }

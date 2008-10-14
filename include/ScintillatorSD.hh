@@ -47,9 +47,10 @@ class ScintillatorSD : public G4VSensitiveDetector
       virtual void EndOfEvent(G4HCofThisEvent*HCE);
 
   private:
-      ScintillatorHitsCollection* hitsCollection;
-      G4int HCID;
-      G4int fTotNumScintStrips;
+  ScintillatorHitsCollection* hitsCollection;
+  G4int HCID;
+  
+  G4int fCountScintHits;
 #include "DetectorParams.hh"
 };
 

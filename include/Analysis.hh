@@ -28,9 +28,9 @@
 #include "globals.hh"
 #include "G4ios.hh"
 #include "G4TrajectoryContainer.hh"
+#include "ScintillatorHit.hh"
 
-class G4Track;
-class data_t;
+class TClonesArray;
 
 class Analysis
 {
@@ -41,26 +41,28 @@ public:
 
   void book();
   void finish();
-  void FillNtuple(const G4Track& track, const int a_box_index);
+  void FillTree(const ScintillatorHitsCollection *hitCol);
 
   static Analysis* getInstance();
 
 private:
   static Analysis* instance;
 
-  G4double x;
-  G4double y;
-  G4double z;
 
   char NtupleFileName[50];
 
  public:
   DataInput* Data;
 
-  TFile* Ntuple; 
-  TTree* tree;
+  TFile* fScintFile; 
+  TTree* fScintTree;
+  Int_t fRun;
+  Int_t fEvent;
 
-  data_t *g4data;
+  TClonesArray *fScintHitArray;
+
+  #include "DetectorParams.hh"
+
 };
 
 #endif 

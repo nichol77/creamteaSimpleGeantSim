@@ -38,8 +38,7 @@
 #include "DataInput.hh"
 #include "globals.hh"
 #include <stdlib.h>
-#include "../../global_vars.hh"
-
+#include "DetectorDefs.hh"
 
 
 CosmicRayFluxParticleSource::CosmicRayFluxParticleSource()
@@ -49,7 +48,7 @@ CosmicRayFluxParticleSource::CosmicRayFluxParticleSource()
   G4SPSPosDistribution *fPosGenerator = this->GetPosDist();
   fPosGenerator->SetPosDisType("Plane");
   fPosGenerator->SetPosDisShape("Square");
-  fPosGenerator->SetCentreCoords(G4ThreeVector(0,0,(SIDELENGTH*m)));
+  fPosGenerator->SetCentreCoords(G4ThreeVector(0,0,(SIDELENGTH*m + (PLANES_PER_SIDE*GAP_BETWEEN_PLANES_CM*cm))));
   fPosGenerator->SetHalfX((SIDELENGTH*m));
   fPosGenerator->SetHalfY((SIDELENGTH*m));
 
