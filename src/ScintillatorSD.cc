@@ -28,6 +28,7 @@
 //
 #include "ScintillatorSD.hh"
 #include "ScintillatorHit.hh"
+#include "DetectorConstruction.hh"
 #include "Analysis.hh"
 
 #include "G4HCofThisEvent.hh"
@@ -36,18 +37,18 @@
 #include "G4Step.hh"
 #include "G4SDManager.hh"
 #include "G4ios.hh"
-#include "DetectorDefs.hh"
+//#include "DetectorDefs.hh"
 
-ScintillatorSD::ScintillatorSD(G4String name)
+ScintillatorSD::ScintillatorSD(G4String name, DetectorConstruction *detConPtr)
 :G4VSensitiveDetector(name)
 {
   G4String HCname;
   collectionName.insert(HCname="ScintillatorColl");
   HCID = -1;
-  float boxSize = SIDELENGTH; //allows all the scintillator boxed to be scaled from here. 
-  #include "DetectorParams.icc"
   fCountScintHits=0;
   hitsCollection=0;
+  fNumScintPlanes=detConPtr->getNumScintPlanes();
+  fNumScintStrips=detConPtr->getNumScintStrips();
 
 }
 
@@ -127,7 +128,7 @@ void ScintillatorSD::EndOfEvent(G4HCofThisEvent* /*HCE*/)
 
   if(fCountScintHits>0) {
     Analysis *treeMaker = Analysis::getInstance();
-    treeMaker->FillTree(hitsCollection);
+    treeMaker->addScintHits(hitsCollection);
 
   //   for(int i=0;i<fTotNumScintStrips;i++) {
 //       ScintillatorHit* aHit = (*hitsCollection)[i];

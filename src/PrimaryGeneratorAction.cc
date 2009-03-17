@@ -36,6 +36,7 @@
 #include "G4ParticleDefinition.hh"
 #include "RunManager.hh"
 #include "globals.hh"
+#include "Analysis.hh"
 
 
 #include "CosmicRayFluxParticleSource.hh"
@@ -53,11 +54,12 @@ void getPxPyPz(double pVec[3], double pMin=0.1, double pMax=1000);
 //#include "cosmicflux.dat"
 
 G4int n_particle;
-PrimaryGeneratorAction::PrimaryGeneratorAction()
+PrimaryGeneratorAction::PrimaryGeneratorAction(DetectorConstruction *detConPtr)
+  :fMyDetCon(detConPtr)
 {
   //the constructor which initialises some variables.
   n_particle = 1;
-  fParticleSource = new CosmicRayFluxParticleSource();
+  fParticleSource = new CosmicRayFluxParticleSource(fMyDetCon);
   
   G4ParticleTable* particleTable = G4ParticleTable::GetParticleTable();
   G4String particleName;
@@ -78,6 +80,7 @@ void PrimaryGeneratorAction::GeneratePrimaries(G4Event *anEvent)
    G4int i = anEvent->GetEventID() % 3;
    if(n_particle%100==0) G4cout<<" particle number "<<n_particle<<" i "<<i<<G4endl;
    fParticleSource->GeneratePrimaryVertex(anEvent);
+   Analysis::getInstance()->setGenEng(fParticleSource->GetParticleEnergy());
    n_particle++;
 }
 

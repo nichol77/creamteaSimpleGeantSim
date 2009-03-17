@@ -23,40 +23,28 @@
 // * acceptance of all terms of the Geant4 Software license.          *
 // ********************************************************************
 //
-// $Id: ScintillatorSD.hh,v 1.4 2006/06/29 16:31:00 gunter Exp $
-// --------------------------------------------------------------
 //
-#ifndef ScintillatorSD_h
-#define ScintillatorSD_h 1
+//
 
-#include "G4VSensitiveDetector.hh"
-#include "ScintillatorHit.hh"
-class G4Step;
-class G4HCofThisEvent;
-class G4TouchableHistory;
-class DetectorConstruction;
+#ifndef CosmicRayEneDistribution_h
+#define CosmicRayEneDistribution_h 1
 
-class ScintillatorSD : public G4VSensitiveDetector
+
+#include "G4SPSEneDistribution.hh"
+
+
+
+class CosmicRayEneDistribution : public G4SPSEneDistribution
 {
-
   public:
-  ScintillatorSD(G4String name, DetectorConstruction *detConPtr);
-      virtual ~ScintillatorSD();
+   CosmicRayEneDistribution();
+   ~CosmicRayEneDistribution();
+  G4double GenerateOne(G4ParticleDefinition *a);
 
-      virtual void Initialize(G4HCofThisEvent*HCE);
-      virtual G4bool ProcessHits(G4Step*aStep, G4TouchableHistory*ROhist);
-      virtual void EndOfEvent(G4HCofThisEvent*HCE);
-
-  private:
-  ScintillatorHitsCollection* hitsCollection;
-  G4int HCID;
-  G4int fCountScintHits;  
-  G4int fNumScintPlanes;
-  G4int fNumScintStrips;
+private:
+  G4double particle_energy;
 };
 
-
-
-
 #endif
+
 

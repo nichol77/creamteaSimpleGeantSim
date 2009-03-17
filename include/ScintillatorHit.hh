@@ -60,13 +60,13 @@ class ScintillatorHit : public G4VHit
       virtual void Print();
 
   private:
-      G4int fPlaneNum;
-      G4int fStripNum;
-     G4ThreeVector fTruePos;
-      G4double edep;
-      G4ThreeVector pos; //For drawing
-      G4RotationMatrix rot; //For drawing
-     const G4LogicalVolume* pLogV; //For drawing
+  G4int fPlaneNum;
+  G4int fStripNum;
+  G4ThreeVector fTruePos;
+  G4double edep;
+  G4ThreeVector pos; //For drawing
+  G4RotationMatrix rot; //For drawing
+  const G4LogicalVolume* pLogV; //For drawing
 
   public:
       inline void SetPlane(G4int plane) { fPlaneNum=plane; }

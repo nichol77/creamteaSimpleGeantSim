@@ -32,15 +32,19 @@
 
 #include "G4SingleParticleSource.hh"
 
-
+class DetectorConstruction;
 class G4Event;
 
 class CosmicRayFluxParticleSource : public G4SingleParticleSource
 {
   public:
-   CosmicRayFluxParticleSource();
+   CosmicRayFluxParticleSource(DetectorConstruction *detConPtr);
    ~CosmicRayFluxParticleSource();
-public:
+private:
+  //  G4SPSEneDistribution* eneGenerator;
+  double simpleMuonFlux(double energy);
+  double weirdCosThetaFlux(double theta);
+  DetectorConstruction *fMyDetCon;
 
 };
 

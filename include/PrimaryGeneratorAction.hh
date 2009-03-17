@@ -33,20 +33,22 @@
 
 #include "G4VUserPrimaryGeneratorAction.hh"
 
+class DetectorConstruction;
 class CosmicRayFluxParticleSource;
 class G4Event;
 
 class PrimaryGeneratorAction : public G4VUserPrimaryGeneratorAction
 {
   public:
-    PrimaryGeneratorAction();
+    PrimaryGeneratorAction(DetectorConstruction *detConPtr);
     ~PrimaryGeneratorAction();
 
   public:
     void GeneratePrimaries(G4Event* anEvent);
 
   private:
-    CosmicRayFluxParticleSource* fParticleSource;
+  DetectorConstruction *fMyDetCon;
+  CosmicRayFluxParticleSource* fParticleSource;
 };
 
 #endif

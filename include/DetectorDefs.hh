@@ -17,7 +17,7 @@
 #define GAP_BETWEEN_PLANES_CM 20
 
 //Plane width in cm
-#define PLANE_WIDTH_CM 0.5
+#define PLANE_WIDTH_CM 1
 
 //Rotate each plane by 90??
 #define ROTATE_EVERY_PLANE 1

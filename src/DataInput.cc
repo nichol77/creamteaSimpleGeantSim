@@ -21,9 +21,9 @@ DataInput::DataInput()
     G4Exception("DataInput constructed twice.");
   }
   fDataInput = this;
-  WorldX = WORLD_SIZE*m;
-  WorldY = WORLD_SIZE*m;
-  WorldZ = WORLD_SIZE*m;
+//   WorldX = 4*m;
+//   WorldY = 4*m;
+//   WorldZ = 4*m;
   KillTracking = false;
   KillTrackingEnergy = .05*MeV;
   CreateNtuple = true;
@@ -42,4 +42,10 @@ G4double DataInput::GetKillTrackingThreshold(){
   return KillTrackingEnergy;
 }
 
+void DataInput::setWorldXYZ(G4double x, G4double y, G4double z)
+{
+  WorldX=x;
+  WorldY=y;
+  WorldZ=z;
 
+}

@@ -13,6 +13,7 @@ class DataInput
   G4double GetKillTrackingThreshold();
   G4bool GetKillTracking();
   
+  void setWorldXYZ(G4double x, G4double y, G4double z);
   static DataInput* GetDataInput();
  
  private:

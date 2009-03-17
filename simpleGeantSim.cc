@@ -115,28 +115,19 @@ int main(int argc,char** argv){
   
   //--------------------------------------------------    
   // Set user action classes
-
-  runManager->SetUserAction(new PrimaryGeneratorAction);
+  PrimaryGeneratorAction *generator = new PrimaryGeneratorAction(detector);
+  runManager->SetUserAction(generator);
   runManager->SetUserAction(new SteppingAction);
 
   RunAction* run_action = new RunAction;  
   runManager->SetUserAction(run_action);
 
 
-  /*
-  //
-  ExN03EventAction* event_action = new ExN03EventAction(run_action);
-  runManager->SetUserAction(event_action);
-  //
-  G4UserSteppingAction* stepping_action =
-    new ExN03SteppingAction(detector, event_action);
-  runManager->SetUserAction(stepping_action);  
-  */
 
   //--------------------------------------------------
   // Initialize G4 kernel  
   runManager->Initialize();
-
+  G4cout << "Where are we????\n";
     
   //--------------------------------------------------
   // Get the pointer to the User Interface manager

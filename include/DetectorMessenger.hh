@@ -23,40 +23,55 @@
 // * acceptance of all terms of the Geant4 Software license.          *
 // ********************************************************************
 //
-// $Id: ScintillatorSD.hh,v 1.4 2006/06/29 16:31:00 gunter Exp $
-// --------------------------------------------------------------
 //
-#ifndef ScintillatorSD_h
-#define ScintillatorSD_h 1
+// $Id: DetectorMessenger.hh,v 1.8 2006/06/29 17:47:33 gunter Exp $
+// GEANT4 tag $Name: geant4-09-01-patch-03 $
+//
+//....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
+//....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
-#include "G4VSensitiveDetector.hh"
-#include "ScintillatorHit.hh"
-class G4Step;
-class G4HCofThisEvent;
-class G4TouchableHistory;
+#ifndef DetectorMessenger_h
+#define DetectorMessenger_h 1
+
+#include "globals.hh"
+#include "G4UImessenger.hh"
+
 class DetectorConstruction;
+class G4UIdirectory;
+class G4UIcmdWithAString;
+class G4UIcmdWithADoubleAndUnit;
+class G4UIcmdWithAnInteger;
 
-class ScintillatorSD : public G4VSensitiveDetector
+//....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
+
+class DetectorMessenger: public G4UImessenger
 {
-
   public:
-  ScintillatorSD(G4String name, DetectorConstruction *detConPtr);
-      virtual ~ScintillatorSD();
-
-      virtual void Initialize(G4HCofThisEvent*HCE);
-      virtual G4bool ProcessHits(G4Step*aStep, G4TouchableHistory*ROhist);
-      virtual void EndOfEvent(G4HCofThisEvent*HCE);
-
+    DetectorMessenger(DetectorConstruction*);
+   ~DetectorMessenger();
+    
+    void SetNewValue(G4UIcommand*, G4String);
+    
   private:
-  ScintillatorHitsCollection* hitsCollection;
-  G4int HCID;
-  G4int fCountScintHits;  
-  G4int fNumScintPlanes;
-  G4int fNumScintStrips;
+    DetectorConstruction* myDetector;
+    
+  G4UIdirectory*             creamteaDir;
+  G4UIdirectory*             detDir;
+  //  G4UIcmdWithAString*        TargMatCmd; //Might return
+
+  //These currently don't work as I need to be cleverer than I currently feel capable of
+  G4UIcmdWithAnInteger*  NumPlanesCmd; //Num planes in each stack
+  G4UIcmdWithAnInteger*  NumStripsCmd; //Number of strips in each plane
+  G4UIcmdWithADoubleAndUnit *PlaneGapCmd; //Gap between planes
+  G4UIcmdWithADoubleAndUnit *PlaneLengthCmd; //Transverse length of planes
+  G4UIcmdWithADoubleAndUnit *PlaneWidthCmd; //Width (depth) of  planes
+  G4UIcmdWithADoubleAndUnit *WorldSizeCmd; //Size of world
+  
+  
+  
 };
 
-
-
+//....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
 #endif
 

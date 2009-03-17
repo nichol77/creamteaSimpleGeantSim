@@ -22,6 +22,7 @@
 #include <TFile.h>          
 #include <TText.h>
 #include <TTree.h>
+#include <TMath.h>
 #include <TF1.h>
 #include <TLine.h>
 #include <TCanvas.h>
@@ -65,7 +66,6 @@ Analysis::Analysis()
 #ifdef G4ANALYSIS_USE
 #endif
 
-#include "DetectorParams.icc"
 
 }
 //----------------------------------------------------------------------
@@ -97,6 +97,15 @@ void Analysis::book(){
     fScintTree->Branch("run",&fRun,"run/I");
     fScintTree->Branch("event",&fEvent,"event/I");
     fScintTree->Branch("ScintHitInfo","TClonesArray",&fScintHitArray,32000,1);
+    fScintTree->Branch("numHits",&fCountHits,"numHits/I");
+    fScintTree->Branch("intPos",fIntPos,"intPos[3]/D");
+    fScintTree->Branch("intMom",fIntMom,"intMom[3]/D");
+    fScintTree->Branch("intEng",&fIntEng,"intEng/D");
+    fScintTree->Branch("genEng",&fGenEng,"genEng/D");
+    fScintTree->Branch("phi",&fPhi,"phi/D");
+    fScintTree->Branch("theta",&fTheta,"theta/D");
+    fScintTree->Branch("intPDGCode",&fIntPDGCode,"intPDGCode/I");
+
   }
 }
 
@@ -126,32 +135,46 @@ void Analysis::finish()
 
 //----------------------------------------------------------------------
 // Fill the created Ntuple. 
-void Analysis::FillTree(const ScintillatorHitsCollection *hitCol) 
+void Analysis::addScintHits(const ScintillatorHitsCollection *hitCol) 
 {
   if (!Data->CreateNtuple) return;
 
   TClonesArray &theHits = *fScintHitArray;
-  Int_t countHits=0;
+  fCountHits=0;
 
 
   G4RunManager* pRunManager = G4RunManager::GetRunManager();
   fRun = pRunManager->GetCurrentRun()->GetRunID();
   fEvent = pRunManager->GetCurrentEvent()->GetEventID();
-
-
+  const G4Event *aEvent = pRunManager->GetCurrentEvent();
+  
+  fIntPos[0]=aEvent->GetPrimaryVertex()->GetX0();
+  fIntPos[1]=aEvent->GetPrimaryVertex()->GetY0();
+  fIntPos[2]=aEvent->GetPrimaryVertex()->GetZ0();
+  G4PrimaryParticle *aParticle = aEvent->GetPrimaryVertex()->GetPrimary();
+  fIntMom[0]=aParticle->GetPx();
+  fIntMom[1]=aParticle->GetPy();
+  fIntMom[2]=aParticle->GetPz();
+  fIntEng=TMath::Sqrt(aParticle->GetMass()*aParticle->GetMass() +
+		      fIntMom[0]*fIntMom[0]+
+		      fIntMom[1]*fIntMom[1]+
+		      fIntMom[2]*fIntMom[2]);
+  fPhi=TMath::ATan2(fIntMom[1],fIntMom[0]);
+  fTheta=TMath::ATan2(TMath::Sqrt(fIntMom[0]*fIntMom[0]+fIntMom[1]*fIntMom[1]),TMath::Abs(fIntMom[2]));
+  fIntPDGCode=aParticle->GetPDGcode();
   for(int i=0;i<fTotNumScintStrips;i++) {
     ScintillatorHit* aHit = (*hitCol)[i];
     //Check if there was a hit
     if((aHit->GetLogV())) {
       Double_t pos[3]={aHit->GetTruePos()[0],aHit->GetTruePos()[1],aHit->GetTruePos()[2]};
       Int_t side=(aHit->GetPlane()/fNumScintPlanes);
-      new(theHits[countHits])
+      new(theHits[fCountHits])
 	ScintHitInfo(side,aHit->GetPlane(),aHit->GetStrip(),
 		     pos,aHit->GetEdep());
-      countHits++;
+      fCountHits++;
     }
   }	  
-  if(countHits>0) {
+  if(fCountHits>0) {
     fScintTree->Fill();
     fScintHitArray->Clear();
   }

@@ -17,6 +17,7 @@
 //----------------------------------------------------------------------
 //----------------------------------------------------------------------
 #include "DetectorConstruction.hh"
+#include "DetectorMessenger.hh"
 #include "ScintillatorSD.hh"
 
 #include "G4Material.hh"
@@ -36,21 +37,34 @@
 #include "G4PVDivision.hh"
 #include "G4SDManager.hh"
 #include "DetectorDefs.hh"
+#include "Analysis.hh"
 #include "globals.hh"
+
 
 DetectorConstruction::DetectorConstruction(){
   Data = DataInput::GetDataInput();
   DefineMaterials();
+
+  fWorldSize=WORLD_SIZE*m;
+  fNumScintPlanes=PLANES_PER_SIDE;
+  fScintPlaneGap=GAP_BETWEEN_PLANES_CM*cm;
+  fScintPlaneLength=SIDELENGTH*m;
+  fScintPlaneWidth=PLANE_WIDTH_CM*cm;
+  fNumScintStrips=STRIPS_PER_PLANE;
+  fRotate90=ROTATE_EVERY_PLANE;
+  fTotNumScintStrips=2*fNumScintPlanes*fNumScintStrips;	
+  detectorMessenger = new DetectorMessenger(this);
 }
 
 DetectorConstruction::~DetectorConstruction()
 {
+  delete detectorMessenger;
 }
 
 G4VPhysicalVolume* DetectorConstruction::Construct()
 {
   // ---------------------------- Materials to use
-
+  Data->setWorldXYZ(fWorldSize,fWorldSize,fWorldSize);
   G4Element* elFe = new G4Element("Iron", "Fe", 26, 55.85*g/mole);
 
   // steel
@@ -63,13 +77,19 @@ G4VPhysicalVolume* DetectorConstruction::Construct()
   steelNails->AddElement (elFe, 78*perCent);
 
 
-  float boxSize = SIDELENGTH; //allows all the scintillator boxed to be scaled from here. 
+  //  float fWorldSize = fWorldSize; //SIDELENGTH; //allows all the scintillator boxed to be scaled from here. 
 
-#include "DetectorParams.icc"
 
   G4double scintStripWidth=fScintPlaneLength/fNumScintStrips;
   
-  G4cout << fScintPlaneLength << "\t" << fNumScintStrips << "\t" << scintStripWidth << "\n";
+  G4cout << "World Size: " << fWorldSize << "\n";
+  G4cout << "Plane Length: " << fScintPlaneLength << "\n";
+  G4cout << "Plane Width: " << fScintPlaneWidth << "\n";
+  G4cout << "Plane Gap: " << fScintPlaneGap << "\n";
+  G4cout << "Num planes: " << fNumScintPlanes << "\n";
+  G4cout << "Num strips: " << fNumScintStrips << "\n";
+  G4cout << "Strip Width: " << scintStripWidth << "\n";
+  //  G4cout << fScintPlaneLength << "\t" << fNumScintStrips << "\t" << scintStripWidth << "\n";
   
 
 
@@ -126,38 +146,6 @@ G4VPhysicalVolume* DetectorConstruction::Construct()
   }
   
 
-
-//   //First up is the Solid Box
-//   G4Box *sBoxTop = new G4Box("sBoxTop",(boxSize*m)/2,(boxSize*m)/2,fScintPlaneWidth/2.);
-//   //Now the Logical Box
-//   G4LogicalVolume *lvBoxTop = new G4LogicalVolume(sBoxTop,Air,"lvBoxTop",0,0,0);
-//   G4VPhysicalVolume *pvBoxTop = new G4PVPlacement(0,G4ThreeVector(0.,0.,(boxSize*m)/2),"pvBoxTop",lvBoxTop,pvWorld,false,0);
-
-//   //Now we can try and add the scintillator planes inside
-//   G4Box *sTopScintPlane  = new G4Box("sTopScintPlane", boxSize*m,boxSize*m, boxSize*m); //I think that the sizes are irrelevant
-//   G4LogicalVolume* lvTopScintPlane = new G4LogicalVolume(sTopScintPlane, Scintillator, "lvTopScintPlane",0,0,0); 
-
-// //   Now split it up into strips
-//   G4PVDivision *pvTopScintPlane = new G4PVDivision("pvTopScintPlane", lvTopScintPlane, lvBoxTop, kXAxis, fNumScintStrips,0); 
-
-//  G4VPVParameterisation *scintPlaneParam 
-//     = new ScintillatorPlaneParameterisation(fNumScintPlanes,
-//					     fScintPlaneLength/2.,
-//					     fScintPlaneWidth/2.);
-
-
-//  G4VPhysicalVolume *pvTopScintPlanes 
-//    = new G4PVParameterised("pvTopScintPlanes",
-//			    lvTopScintPlanes,
-//			    lvBoxTop,
-//			    kXAxis,
-//    		    fNumScintStrips,
-//			    scintPlaneParam);
-					    
-
-
-
-  std::cout<<"not a background"<<std::endl;  
   G4VSolid *sSphereNails = new G4Sphere ("sphereNails", //name
 					 0,             // inner radius
 					 0.2*m,         // outer radius
@@ -178,10 +166,13 @@ G4VPhysicalVolume* DetectorConstruction::Construct()
 
   G4SDManager* SDman = G4SDManager::GetSDMpointer();
   G4String scintSDName = "/mydet/scint";
-  ScintillatorSD  *scintSD = new ScintillatorSD(scintSDName);
+  ScintillatorSD  *scintSD = new ScintillatorSD(scintSDName,this);
   SDman->AddNewDetector(scintSD);
   lvScintStrip->SetSensitiveDetector(scintSD);
     
+
+  Analysis::getInstance()->setTotNumScintStrips(fTotNumScintStrips);
+  Analysis::getInstance()->setNumScintPlanes(fNumScintPlanes);
 
   return pvWorld;
 }

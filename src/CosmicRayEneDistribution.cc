@@ -23,40 +23,72 @@
 // * acceptance of all terms of the Geant4 Software license.          *
 // ********************************************************************
 //
-// $Id: ScintillatorSD.hh,v 1.4 2006/06/29 16:31:00 gunter Exp $
-// --------------------------------------------------------------
 //
-#ifndef ScintillatorSD_h
-#define ScintillatorSD_h 1
+// $Id: CosmicRayEneDistribution.cc,v 1.6 2006/06/29 17:47:23 gunter Exp $
+// GEANT4 tag $Name: geant4-08-01 $
+//
 
-#include "G4VSensitiveDetector.hh"
-#include "ScintillatorHit.hh"
-class G4Step;
-class G4HCofThisEvent;
-class G4TouchableHistory;
-class DetectorConstruction;
+#include "CosmicRayEneDistribution.hh"
 
-class ScintillatorSD : public G4VSensitiveDetector
-{
+#include "G4Event.hh"
+#include "G4SingleParticleSource.hh"
+#include "G4ParticleTable.hh"
+#include "G4ParticleDefinition.hh"
+#include "RunManager.hh"
+#include "DataInput.hh"
+#include "globals.hh"
+#include <stdlib.h>
+#include "DetectorDefs.hh"
 
-  public:
-  ScintillatorSD(G4String name, DetectorConstruction *detConPtr);
-      virtual ~ScintillatorSD();
-
-      virtual void Initialize(G4HCofThisEvent*HCE);
-      virtual G4bool ProcessHits(G4Step*aStep, G4TouchableHistory*ROhist);
-      virtual void EndOfEvent(G4HCofThisEvent*HCE);
-
-  private:
-  ScintillatorHitsCollection* hitsCollection;
-  G4int HCID;
-  G4int fCountScintHits;  
-  G4int fNumScintPlanes;
-  G4int fNumScintStrips;
-};
-
-
-
-
+#ifndef PI
+#define PI  3.14159265358979312
 #endif
 
+double getMomentum(double pMin, double pMax);
+
+CosmicRayEneDistribution::CosmicRayEneDistribution()
+  :G4SPSEneDistribution()
+{
+  
+
+  
+}
+
+CosmicRayEneDistribution::~CosmicRayEneDistribution()
+{
+}
+
+G4double CosmicRayEneDistribution::GenerateOne(G4ParticleDefinition *a)
+{
+  //  particle_definition = a;
+  double emin=this->GetEmin();
+  double emax=this->GetEmax();
+  particle_energy = getMomentum(emin,emax);
+  return particle_energy;
+}
+
+
+double getMomentum(double pMin, double pMax) {
+  pMin/=1000;
+  pMax/=1000;
+  double pt = 3;
+  double y = drand48();
+  static double maxp1=pow(pMax,-1.7);
+  static double minpt=pow(pt,-1.7);
+
+  double a = 5;
+
+  double threshold = 1./(1 + (a/-1.7) * (maxp1 - minpt));
+  
+  double momentum1 = ((y*(1+((a/-1.7)*(maxp1-minpt))))*(pt-pMin)) + pMin;
+  double momentum2 = pow((((-1.7/a)*(y*(1+(a/-1.7)*(maxp1-minpt))-1)) + minpt),-
+1./1.7);
+
+  if(y<threshold) {  
+    //std::cout << "Momentum1 = " << momentum1 << "\n";
+    return momentum1*1000;
+    } else { 
+      //std::cout << "Momentum2 = " << momentum2 << "\n";
+    return momentum2*1000;
+    }
+}

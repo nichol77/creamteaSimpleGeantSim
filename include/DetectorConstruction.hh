@@ -40,6 +40,7 @@ class G4Material;
 class G4LogicalVolume;
 class G4VPhysicalVolume;
 class DataInput;
+class DetectorMessenger;
 
 class DetectorConstruction : public G4VUserDetectorConstruction
 {
@@ -50,20 +51,52 @@ class DetectorConstruction : public G4VUserDetectorConstruction
   
   G4VPhysicalVolume* Construct();
   
+  G4double getWorldSize() {return fWorldSize;}
+  G4int getNumScintPlanes() {return fNumScintPlanes;}
+  G4int getNumScintStrips() {return fNumScintStrips;}
+  G4double getScintPlaneGap() {return fScintPlaneGap;}
+  G4double getScintPlaneLength() {return fScintPlaneLength;}
+  G4double getScintPlaneWidth() {return fScintPlaneWidth;}
+  G4int getRotate90() {return fRotate90;}
+  G4int getTotNumScintStrips() {return fTotNumScintStrips;}
+
+  void setWorldSize(G4double worldSize)
+  {fWorldSize=worldSize;}
+  void setNumScintPlanes(G4int numScintPlanes)
+  { fNumScintPlanes=numScintPlanes; G4cout << "Setting num planes to " << numScintPlanes << "\n";}
+  void setNumScintStrips(G4int numScintStrips)
+  { fNumScintStrips=numScintStrips;}
+  void setScintPlaneGap(G4double scintPlaneGap)
+  { fScintPlaneGap=scintPlaneGap;}
+  void setScintPlaneLength(G4double scintPlaneLength)
+  { fScintPlaneLength=scintPlaneLength;}
+  void setScintPlaneWidth(G4double scintPlaneWidth)
+  { fScintPlaneWidth=scintPlaneWidth;}
+
  private:
 
   G4Box*              sWorld;   // Pointer to the solid world
   G4LogicalVolume*    lvWorld;  // pointer to the logical world
   G4VPhysicalVolume*  pvWorld;  // pointer to the physical world
 
-   G4Box*              sBoxTop; //Pointer to the solid top box
-   G4LogicalVolume*   lvBoxTop; //Pointer to the logical top box
-   G4VPhysicalVolume* pvBoxTop; //Pointer to the physical top box
+  G4Box*              sBoxTop; //Pointer to the solid top box
+  G4LogicalVolume*   lvBoxTop; //Pointer to the logical top box
+  G4VPhysicalVolume* pvBoxTop; //Pointer to the physical top box
 
-#include "DetectorParams.hh"
+  //Configurable from the command macro
+  G4double fWorldSize; //Size of the world
+  G4int fNumScintPlanes;  //Number of scintillator planes in each stack
+  G4double fScintPlaneGap; //Gap between the scintillator planes
+  G4double fScintPlaneLength; //Length of the planes
+  G4double fScintPlaneWidth; //Width of the planes
+  G4int fNumScintStrips; //Number of strips
 
 
+  G4int fRotate90; //Is each plane rotated by 90?
+  G4int fTotNumScintStrips;
+  
   DataInput* Data;
+  DetectorMessenger *detectorMessenger;
   
   void DefineMaterials();
 
