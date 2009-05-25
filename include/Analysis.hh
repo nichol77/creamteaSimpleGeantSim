@@ -62,6 +62,7 @@ private:
 
   TFile* fScintFile; 
   TTree* fScintTree;
+  TTree *fWorldTree;
   Int_t fRun;
   Int_t fEvent;
   Int_t fCountHits;

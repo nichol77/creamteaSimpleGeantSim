@@ -51,6 +51,8 @@
 #include "Analysis.hh"
 #include "PrimaryGeneratorAction.hh"
 #include "DataInput.hh"
+#include "DetectorDefs.hh"
+#include "WorldSetup.hh"
 
 using namespace std;
 
@@ -88,11 +90,33 @@ Analysis::~Analysis()
 
 void Analysis::book(){
   if(Data->CreateNtuple){
+    //This is a nasty hack but will do for now.
+    WorldSetup *myWorld = new WorldSetup();
+    myWorld->worldSize=WORLD_SIZE;
+    myWorld->scintLength=SIDELENGTH;
+    myWorld->planesPerSide=PLANES_PER_SIDE;
+    myWorld->stripsPerPlane=STRIPS_PER_PLANE;
+    myWorld->planeWidth=PLANE_WIDTH_CM*0.01; ///Convert to m
+    myWorld->gapBetweenPlanes=GAP_BETWEEN_PLANES_CM*0.01;
+    myWorld->background=BACKGROUND;
+    myWorld->sphereRadius=SPHERE_RADIUS_CM*0.01;
+    myWorld->sphereDensity=SPHERE_DENSITY_KG_M3;
+    myWorld->sphereOriginX=SPHERE_X_M;
+    myWorld->sphereOriginY=SPHERE_Y_M;
+    myWorld->sphereOriginZ=SPHERE_Z_M;
+
+      
+
     fScintHitArray = new TClonesArray("ScintHitInfo",1000);
 
     G4cout << "Creating ntuple: "<< Data->NtupleName << G4endl;
     //    G4String name = Form("%s.root", Data->NtupleName.c_str());
     fScintFile = new TFile(Data->NtupleName.c_str(), "RECREATE");
+    fWorldTree = new TTree("worldTree","Tree of Worldly Things");
+    fWorldTree->Branch("world","WorldSetup",&myWorld);
+    fWorldTree->Fill();
+    fWorldTree->AutoSave();
+
     fScintTree = new TTree("scintTree","Tree of Scintillator Stuff");
     fScintTree->Branch("run",&fRun,"run/I");
     fScintTree->Branch("event",&fEvent,"event/I");

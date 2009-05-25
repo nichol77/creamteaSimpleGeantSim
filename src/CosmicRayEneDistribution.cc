@@ -35,7 +35,6 @@
 #include "G4ParticleTable.hh"
 #include "G4ParticleDefinition.hh"
 #include "RunManager.hh"
-#include "DataInput.hh"
 #include "globals.hh"
 #include <stdlib.h>
 #include "DetectorDefs.hh"

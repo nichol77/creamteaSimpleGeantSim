@@ -7,7 +7,6 @@
 #include "G4VVisManager.hh"
 #include "RunAction.hh"
 #include "Analysis.hh"
-#include "DataInput.hh"
 #include "Randomize.hh"
 #include "RunManager.hh"
 

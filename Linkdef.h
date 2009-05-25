@@ -5,4 +5,5 @@
 
 
 #pragma link C++ class ScintHitInfo+;
+#pragma link C++ class WorldSetup+;
 #endif

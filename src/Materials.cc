@@ -2,7 +2,6 @@
 #include "G4Material.hh"
 #include "G4VisAttributes.hh"
 #include "globals.hh"
-#include "DataInput.hh"
 
 void DetectorConstruction::DefineMaterials(){
 

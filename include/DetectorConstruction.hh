@@ -34,6 +34,7 @@
 #include "G4VUserDetectorConstruction.hh"
 #include "globals.hh"
 #include "DataInput.hh"
+#include "TargetVolume.hh"
 
 class G4Box;
 class G4Material;
@@ -50,7 +51,7 @@ class DetectorConstruction : public G4VUserDetectorConstruction
   ~DetectorConstruction();
   
   G4VPhysicalVolume* Construct();
-  
+  void setTargetVolume(TargetVolume *target) {fTarget=target;}
   G4double getWorldSize() {return fWorldSize;}
   G4int getNumScintPlanes() {return fNumScintPlanes;}
   G4int getNumScintStrips() {return fNumScintStrips;}
@@ -74,7 +75,7 @@ class DetectorConstruction : public G4VUserDetectorConstruction
   { fScintPlaneWidth=scintPlaneWidth;}
 
  private:
-
+  TargetVolume*       fTarget; // Pointer to the target volume
   G4Box*              sWorld;   // Pointer to the solid world
   G4LogicalVolume*    lvWorld;  // pointer to the logical world
   G4VPhysicalVolume*  pvWorld;  // pointer to the physical world

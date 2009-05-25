@@ -7,7 +7,6 @@
 
 #include "globals.hh"
 #include "G4UserSteppingAction.hh"
-#include "DataInput.hh"
 
 class SteppingAction : public G4UserSteppingAction
 {
@@ -18,7 +17,6 @@ class SteppingAction : public G4UserSteppingAction
   
   virtual void UserSteppingAction(const G4Step*);
 
-  DataInput *Data;
 
 };
 

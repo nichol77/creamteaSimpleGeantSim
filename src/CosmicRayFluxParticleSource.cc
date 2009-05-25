@@ -35,7 +35,6 @@
 #include "G4ParticleTable.hh"
 #include "G4ParticleDefinition.hh"
 #include "RunManager.hh"
-#include "DataInput.hh"
 #include "globals.hh"
 #include <stdlib.h>
 
@@ -48,15 +47,19 @@ CosmicRayFluxParticleSource::CosmicRayFluxParticleSource(DetectorConstruction *d
   :G4SingleParticleSource(),fMyDetCon(detConPtr)
 {
   G4double sideLength=fMyDetCon->getScintPlaneLength();
+  G4double planeWidth=fMyDetCon->getScintPlaneWidth();
   G4double planeGap=fMyDetCon->getScintPlaneGap();
   G4int numPlanes=fMyDetCon->getNumScintPlanes();
   
   G4SPSPosDistribution *fPosGenerator = this->GetPosDist();
   fPosGenerator->SetPosDisType("Plane");
   fPosGenerator->SetPosDisShape("Square");
-  fPosGenerator->SetCentreCoords(G4ThreeVector(0,0,(sideLength + numPlanes*planeGap)));
-  fPosGenerator->SetHalfX(sideLength);
-fPosGenerator->SetHalfY(sideLength);
+  G4double zHeight=(sideLength/2 + (numPlanes-1)*planeGap + numPlanes*planeWidth);
+  fPosGenerator->SetCentreCoords(G4ThreeVector(0,0,zHeight));
+  fPosGenerator->SetHalfX(sideLength/2);
+  fPosGenerator->SetHalfY(sideLength/2);
+  
+  G4cout << "Generate at z: " << zHeight << "\twhalfwidth" << sideLength/2 << "\n";
 
   G4SPSAngDistribution *fAngGenerator = this->GetAngDist();
   fAngGenerator->SetAngDistType("user");
@@ -77,9 +80,10 @@ fPosGenerator->SetHalfY(sideLength);
 //   //  fEneGenerator->SetEmax(1e6); // 1000 GeV
 //   //  fEneGenerator->SetAlpha(-2.7);
   fEneGenerator->SetEnergyDisType("Arb");
-  int counter=0;
+  //  int counter=0;
   for(double energy=0;energy<1e6;energy+=1000) {
-    double value=10000*simpleMuonFlux(energy/1000); //Just an arbitrary scaling
+    //    double value=10000*simpleMuonFlux(energy/1000); //Just an arbitrary scaling
+    double value=10000*moreComplicatedMuonFlux(energy/1000); //Just an arbitrary scaling
       fEneGenerator->ArbEnergyHisto(G4ThreeVector(energy*MeV, value , 0.));
       //      std::cout << (++counter) << "\t" << energy << "\t" << value << "\n";
     }
@@ -110,4 +114,28 @@ double CosmicRayFluxParticleSource::simpleMuonFlux(double energy)
 double CosmicRayFluxParticleSource::weirdCosThetaFlux(double theta)
 {
   return pow(cos(theta),2.15);
+}
+
+double CosmicRayFluxParticleSource::moreComplicatedMuonFlux(double momentum)
+{
+  //Momentum in GeV
+  if(momentum<1) momentum=1;
+  double momThresh[4]={1,9.2765e2,1.5878e3,4.1625e5};
+  double C[4]={2.95e-3,1.78e-2,1.435e1,1e3};
+  double g0[4]={0.3061,1.791,3.672,4};
+  double g1[4]={1.2743,0.3040,0,0};
+  double g2[4]={-0.2630,0,0,0};
+  double g3[4]={0.0252,0,0,0};
+ 
+  int ind=0;
+  for(int i=1;i<4;i++) {
+    if(momentum>momThresh[i]) 
+      ind=i;
+  }
+  double logP=log(momentum);
+
+  double val=-1*(g0[ind] +g1[ind]*logP + g2[ind]*logP*logP + g3[ind]*logP*logP*logP);
+  double final = C[ind]*pow(momentum,val);
+  return final;
+
 }

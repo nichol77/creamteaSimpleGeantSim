@@ -7,7 +7,6 @@
 #include "G4VVisManager.hh"
 #include "EventAction.hh"
 #include "Analysis.hh"
-#include "DataInput.hh"
 #include "Randomize.hh"
 
 EventAction::EventAction()

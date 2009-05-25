@@ -4,7 +4,6 @@
 
 #include "G4RunManager.hh"
 #include "RunManager.hh"
-#include "DataInput.hh"
 #include "TStopwatch.h"
 #include "TTime.h"
 
@@ -19,8 +18,6 @@ void RunManager::BeamOn(G4int n_event, const char* placeholder, G4int n_select)
   G4bool cond = ConfirmBeamOnCondition();
    if(cond)
      {
-       DataInput *ND = DataInput::GetDataInput();
-       //       ND->SetRunNumber(macroFile);
 
        if (runOn){
 	 TStopwatch *sWatch=new TStopwatch();

@@ -1,24 +1,18 @@
 //
 //----------------------------------------------------------------------
-// Author: D. Jason Koskinen
-// Date: 5/30/07 
+// Author: rjn@hep.ucl.ac.uk -- based on work by D. Jason Koskinen
+// Date: 10/09/08 
 //
-// The following code establishes the Detector geometry and location.
 // 
-// Note: All the dimensions for Geant4 solids are half lengths since 
-// everything is determined from the center of the solid.  
-// A 1m x 2m x 3m box will have to be declared as having a 0.5m distance 
-// from the center of the box in the x direction 1m dist. in Y etc... 
-// The principle of center of the solid as being the reference point 
-// also holds when placing the solid in the MC. The G4PVPlacement refers 
-// to the (x, y, z) location of the center of the solid within its
-// associated mother volume. The World volume is the only volume that 
-// does not explicitly require a mother volume. 
 //----------------------------------------------------------------------
 //----------------------------------------------------------------------
 #include "DetectorConstruction.hh"
 #include "DetectorMessenger.hh"
 #include "ScintillatorSD.hh"
+#include "DetectorDefs.hh"
+#include "Analysis.hh"
+#include "globals.hh"
+#include "TargetVolume.hh"
 
 #include "G4Material.hh"
 #include "G4Element.hh"
@@ -36,9 +30,6 @@
 #include "G4PVParameterised.hh"
 #include "G4PVDivision.hh"
 #include "G4SDManager.hh"
-#include "DetectorDefs.hh"
-#include "Analysis.hh"
-#include "globals.hh"
 
 
 DetectorConstruction::DetectorConstruction(){
@@ -53,6 +44,7 @@ DetectorConstruction::DetectorConstruction(){
   fNumScintStrips=STRIPS_PER_PLANE;
   fRotate90=ROTATE_EVERY_PLANE;
   fTotNumScintStrips=2*fNumScintPlanes*fNumScintStrips;	
+  fTarget=0;
   detectorMessenger = new DetectorMessenger(this);
 }
 
@@ -72,7 +64,7 @@ G4VPhysicalVolume* DetectorConstruction::Construct()
   steel->AddElement (elFe, 100*perCent);
 
   //aproximatation of steel nails.
-  G4Material* steelNails = new G4Material ("steelNails", 7800*kg/m3, 2);
+  G4Material* steelNails = new G4Material ("steelNails", SPHERE_DENSITY_KG_M3*kg/m3, 2);
   steelNails->AddMaterial (Air, 22*perCent);
   steelNails->AddElement (elFe, 78*perCent);
 
@@ -145,19 +137,12 @@ G4VPhysicalVolume* DetectorConstruction::Construct()
      assemblyDetector->MakeImprint(lvWorld,Tm,&Rm);
   }
   
-
-  G4VSolid *sSphereNails = new G4Sphere ("sphereNails", //name
-					 0,             // inner radius
-					 0.2*m,         // outer radius
-					 0,             // start phi
-					 360*deg,       // end phi
-					 0,             // start theta
-					 180*deg);      // end theta
-  G4LogicalVolume *lvSphereNails = new G4LogicalVolume(sSphereNails,steelNails, "lvSphereNails");
-  G4VPhysicalVolume *pvSphereNails = new G4PVPlacement (0,G4ThreeVector (0,-0.2*m,0), "pvSphereNails",lvSphereNails,pvWorld, false,0);
-  
- 
-      //  }
+  //--------------------------------------------------------------------
+  // Target Addition
+  //--------------------------------------------------------------------
+  if(fTarget) {
+    fTarget->constructTarget(pvWorld);
+  }
 
 
   //------------------------------------------------------------------

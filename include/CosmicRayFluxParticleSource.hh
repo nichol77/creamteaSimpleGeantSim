@@ -44,6 +44,7 @@ private:
   //  G4SPSEneDistribution* eneGenerator;
   double simpleMuonFlux(double energy);
   double weirdCosThetaFlux(double theta);
+  double moreComplicatedMuonFlux(double momentum);
   DetectorConstruction *fMyDetCon;
 
 };

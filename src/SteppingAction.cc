@@ -9,14 +9,12 @@
 #include "G4ParticleTypes.hh"
 #include "G4TrajectoryContainer.hh"
 #include "G4RunManager.hh"
-#include "DataInput.hh"
 #include "Analysis.hh"
 
 
 
 SteppingAction::SteppingAction()
 {
-  Data = DataInput::GetDataInput();
   G4cout << "stepping action" << G4endl;
 }
 

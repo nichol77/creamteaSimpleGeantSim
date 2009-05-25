@@ -40,7 +40,6 @@
 
 
 #include "CosmicRayFluxParticleSource.hh"
-#include "DataInput.hh"
 #include "DetectorDefs.hh"
 
 

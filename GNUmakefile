@@ -61,8 +61,8 @@ include $(G4INSTALL)/config/binmake.gmk
 CXXFLAGS_WITHOUT_O := $(filter-out -O% , $(CXXFLAGS))
 CXXFLAGS_WITHOUT_O := $(filter-out +O% , $(CXXFLAGS_WITHOUT_O))
 
-sgsCint: include/ScintHitInfo.hh Linkdef.h
-	rootcint -f ./src/sgsCint.cc -c -I./include ../include/ScintHitInfo.hh ../Linkdef.h
+sgsCint: include/ScintHitInfo.hh include/WorldSetup.hh Linkdef.h
+	rootcint -f ./src/sgsCint.cc -c -I./include ../include/ScintHitInfo.hh ../include/WorldSetup.hh ../Linkdef.h
 
 libsgsdict:  $(G4WORKDIR)/tmp/$(G4SYSTEM)/simpleGeantSim/ScintHitInfo.o sgsCint $(G4WORKDIR)/tmp/$(G4SYSTEM)/simpleGeantSim/sgsCint.o 
 ifeq ($(PLATFORM),macosx)

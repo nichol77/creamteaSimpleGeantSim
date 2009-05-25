@@ -82,11 +82,14 @@ int main(int argc,char** argv){
 
   //--------------------------------------------------
   // Set mandatory initialization classes
+  DetectorConstruction* detector = new DetectorConstruction();
+  // Any arbitrary target that inherits from TargetVolume can be added here
+  TargetVolume *target = new TargetVolume();
+  detector->setTargetVolume(target);
 
-  DetectorConstruction* detector = new DetectorConstruction;
   runManager->SetUserInitialization(detector);
  
-  G4VUserPhysicsList* physics = new PhysicsList;
+  G4VUserPhysicsList* physics = new PhysicsList();
   runManager->SetUserInitialization(physics);
   
   G4UIsession* session=0;
