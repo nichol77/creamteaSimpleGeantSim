@@ -17,7 +17,7 @@
 #define PLANES_PER_SIDE 8
 
 //Number of strips per plane
-#define STRIPS_PER_PLANE 100
+#define STRIPS_PER_PLANE 650
 
 //Some definitions for the MINERVA style planes
 #define SCINT_TRIANGLE_HEIGHT_CM 2

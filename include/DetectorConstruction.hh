@@ -61,6 +61,7 @@ class DetectorConstruction : public G4VUserDetectorConstruction
   G4double getScintPlaneWidth() {return fScintPlaneWidth;}
   G4int getRotate90() {return fRotate90;}
   G4int getTotNumScintStrips() {return fTotNumScintStrips;}
+  G4double getVerticalSeparation() {return fVerticalHeight;}
 
   void setWorldSize(G4double worldSize)
   {fWorldSize=worldSize;}
@@ -74,6 +75,7 @@ class DetectorConstruction : public G4VUserDetectorConstruction
   { fScintPlaneLength=scintPlaneLength;}
   void setScintPlaneWidth(G4double scintPlaneWidth)
   { fScintPlaneWidth=scintPlaneWidth;}
+  
 
  private:
   TargetVolume*       fTarget; // Pointer to the target volume
