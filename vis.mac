@@ -3,6 +3,7 @@
 # create empty scene
 #
 /vis/open HepRepFile 600
+#/vis/open OGLIX
 
 /vis/scene/create
 /vis/scene/add/trajectories
@@ -22,7 +23,7 @@
 #
 # draw scene
 #
-/vis/viewer/set/viewpointThetaPhi 0 180 deg
+/vis/viewer/set/viewpointThetaPhi 90 180 deg
 /vis/viewer/zoom 4
 /vis/viewer/flush
 #

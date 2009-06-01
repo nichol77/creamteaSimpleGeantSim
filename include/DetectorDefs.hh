@@ -2,16 +2,26 @@
 #define DETECTORDEFS_HH
 
 //Size of the world
-#define WORLD_SIZE 4
+#define WORLD_SIZE 15
 
-// Side length given in m
-#define SIDELENGTH 2
+//Vertical Separation in m
+#define VERTICAL_SEPARATION 3
 
-//Number of planes per detector side
+// Long side length given in m
+#define SIDELENGTH 13
+
+// Short side length given in m
+#define SHORT_SIDELENGTH 3
+
+//Number of planes per detector stack
 #define PLANES_PER_SIDE 8
 
 //Number of strips per plane
 #define STRIPS_PER_PLANE 100
+
+//Some definitions for the MINERVA style planes
+#define SCINT_TRIANGLE_HEIGHT_CM 2
+#define SCINT_TRIANGLE_BASE_CM 2
 
 //Gap between planes in cm
 #define GAP_BETWEEN_PLANES_CM 10

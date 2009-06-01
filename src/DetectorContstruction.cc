@@ -17,6 +17,7 @@
 #include "G4Material.hh"
 #include "G4Element.hh"
 #include "G4Box.hh"
+#include "G4Trap.hh"
 #include "G4Sphere.hh"
 #include "G4Tubs.hh"
 #include "G4Para.hh"
@@ -36,15 +37,20 @@ DetectorConstruction::DetectorConstruction(){
   Data = DataInput::GetDataInput();
   DefineMaterials();
 
+  fReadFile ="GDML_containerFullRots/containerFullRots.gdml";
   fWorldSize=WORLD_SIZE*m;
   fNumScintPlanes=PLANES_PER_SIDE;
   fScintPlaneGap=GAP_BETWEEN_PLANES_CM*cm;
   fScintPlaneLength=SIDELENGTH*m;
   fScintPlaneWidth=PLANE_WIDTH_CM*cm;
+  fVerticalHeight=VERTICAL_SEPARATION*m;
   fNumScintStrips=STRIPS_PER_PLANE;
   fRotate90=ROTATE_EVERY_PLANE;
   fTotNumScintStrips=2*fNumScintPlanes*fNumScintStrips;	
   fTarget=0;
+  fScintTriHeight=SCINT_TRIANGLE_HEIGHT_CM*cm;
+  fScintTriBase=SCINT_TRIANGLE_BASE_CM*cm;
+  fNumScintTriangles=fScintPlaneLength/fScintTriBase;
   detectorMessenger = new DetectorMessenger(this);
 }
 
@@ -87,11 +93,19 @@ G4VPhysicalVolume* DetectorConstruction::Construct()
 
   //------------------------------ experimental hall (world volume)
 
-  sWorld = new G4Box("sWorld", Data->WorldX/2, Data->WorldY/2, Data->WorldZ/2);
+  //  sWorld = new G4Box("sWorld", Data->WorldX/2, Data->WorldY/2, Data->WorldZ/2);
 
-  lvWorld = new G4LogicalVolume(sWorld,	 Air, "lvWorld");
+  //  lvWorld = new G4LogicalVolume(sWorld,	 Air, "lvWorld");
 
-  pvWorld = new G4PVPlacement(0, G4ThreeVector(0.0,0.0,0.0), lvWorld, "pvWorld", 0, false, 0);
+  //pvWorld = new G4PVPlacement(0, G4ThreeVector(0.0,0.0,0.0), lvWorld, "pvWorld", 0, false, 0);
+
+  //gpt read in world and target information for gdml file.
+  parser.SetOverlapCheck(true);
+  parser.Read(fReadFile);
+  pvWorld = parser.GetWorldVolume();
+  lvWorld = pvWorld->GetLogicalVolume();
+  //  sWorld = lvWorld->GetSolid();
+  G4cout << lvWorld->GetName() << "\n";
 
   //--------------------------------------------------
   // For now what we'll try and do is just make three scintillator planes at the top, 
@@ -124,24 +138,69 @@ G4VPhysicalVolume* DetectorConstruction::Construct()
   //add it to the world
   //First up is the top side
   for(G4int planeNum=0;planeNum<fNumScintPlanes;planeNum++) {
-     G4ThreeVector Tm(0,0,fScintPlaneLength/2. + planeNum*fScintPlaneGap);
+     G4ThreeVector Tm(0,0,fVerticalHeight/2. + planeNum*fScintPlaneGap);
      G4RotationMatrix Rm; //Will do this in a second
      if(planeNum%2==1) Rm.rotateZ(90*deg);
      assemblyDetector->MakeImprint(lvWorld,Tm,&Rm);
   }
   //Then we'll do the bottom side
   for(G4int planeNum=0;planeNum<fNumScintPlanes;planeNum++) {
-     G4ThreeVector Tm(0,0,-fScintPlaneLength/2. - planeNum*fScintPlaneGap);
+     G4ThreeVector Tm(0,0,-fVerticalHeight/2. - planeNum*fScintPlaneGap);
      G4RotationMatrix Rm; //Will do this in a second
      if(planeNum%2==1) Rm.rotateZ(90*deg);
      assemblyDetector->MakeImprint(lvWorld,Tm,&Rm);
   }
   
+
+  //Now lets try and make a scintillator plane stack
+  //Define a scintillator strip x is the width, y is the length, z is the thickness
+
+  //This is a toblerone shape with triangle height fScintTriHeight (in Z), triangle base fScintTriBase (in x) and strip length fScintPlaneLength (in y).
+//   G4Trap *scintToblerone = new G4Trap("scintToblerone",
+// 				      fScintTriBase,0,
+// 				      fScintPlaneLength,fScintPlaneLength,
+// 				      fScintTriHeight
+//   G4LogicalVolume *lvScintTriangle 
+//      = new G4LogicalVolume(scintStripBox,Scintillator,"lvScintTriangle",0,0,0);
+
+//   //First we'll assemble all the strips in one plane then, we'll try and stack the planes
+//   G4AssemblyVolume *assemblyDetector = new G4AssemblyVolume();
+  
+//   //These are the roatation and translation of the strip in the plane
+//   G4RotationMatrix Ra;
+//   G4ThreeVector Ta;
+
+//   Ta.setY(0);
+//   Ta.setZ(0);
+//   for(G4int stripNum=0;stripNum<fNumScintStrips;stripNum++) {
+//      Ta.setX(-fScintPlaneLength/2. + (stripNum+0.5)*scintStripWidth);
+//      //     G4cout << Ta.getX() << "\n";
+//      assemblyDetector->AddPlacedVolume(lvScintTriangle,Ta,&Ra);
+//   }
+  
+//   //So now we have hopefully assembled a scintillator plane, now we can to 
+//   //add it to the world
+//   //First up is the top side
+//   for(G4int planeNum=0;planeNum<fNumScintPlanes;planeNum++) {
+//      G4ThreeVector Tm(0,0,fVerticalHeight/2. + planeNum*fScintPlaneGap);
+//      G4RotationMatrix Rm; //Will do this in a second
+//      if(planeNum%2==1) Rm.rotateZ(90*deg);
+//      assemblyDetector->MakeImprint(lvWorld,Tm,&Rm);
+//   }
+//   //Then we'll do the bottom side
+//   for(G4int planeNum=0;planeNum<fNumScintPlanes;planeNum++) {
+//      G4ThreeVector Tm(0,0,-fVerticalHeight/2. - planeNum*fScintPlaneGap);
+//      G4RotationMatrix Rm; //Will do this in a second
+//      if(planeNum%2==1) Rm.rotateZ(90*deg);
+//      assemblyDetector->MakeImprint(lvWorld,Tm,&Rm);
+//   }
+  
+
   //--------------------------------------------------------------------
   // Target Addition
   //--------------------------------------------------------------------
   if(fTarget) {
-    fTarget->constructTarget(pvWorld);
+    // fTarget->constructTarget(pvWorld);
   }
 
 

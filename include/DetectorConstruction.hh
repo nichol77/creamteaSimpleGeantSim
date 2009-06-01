@@ -35,6 +35,7 @@
 #include "globals.hh"
 #include "DataInput.hh"
 #include "TargetVolume.hh"
+#include "G4GDMLParser.hh"
 
 class G4Box;
 class G4Material;
@@ -90,8 +91,13 @@ class DetectorConstruction : public G4VUserDetectorConstruction
   G4double fScintPlaneGap; //Gap between the scintillator planes
   G4double fScintPlaneLength; //Length of the planes
   G4double fScintPlaneWidth; //Width of the planes
+  G4double fVerticalHeight; //Vertical Height between top and bottom planes
   G4int fNumScintStrips; //Number of strips
 
+  //Variables for the toblerone shape
+  G4double fScintTriHeight;
+  G4double fScintTriBase;
+  G4int fNumScintTriangles;
 
   G4int fRotate90; //Is each plane rotated by 90?
   G4int fTotNumScintStrips;
@@ -115,6 +121,15 @@ class DetectorConstruction : public G4VUserDetectorConstruction
   G4Material *Vacuum;
   G4Material *Scintillator;
   G4Material *U;
+
+  // GDMLparser
+  //
+  G4GDMLParser parser;
+        
+  // Reading and Writing Settings
+  //
+  G4String fReadFile;   
+
 
 };
 

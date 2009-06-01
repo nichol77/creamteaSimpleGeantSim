@@ -59,7 +59,7 @@ CosmicRayFluxParticleSource::CosmicRayFluxParticleSource(DetectorConstruction *d
   fPosGenerator->SetHalfX(sideLength/2);
   fPosGenerator->SetHalfY(sideLength/2);
   
-  G4cout << "Generate at z: " << zHeight << "\twhalfwidth" << sideLength/2 << "\n";
+  G4cout << "Generate at z: " << zHeight << "\thalfwidth " << sideLength/2 << "\n";
 
   G4SPSAngDistribution *fAngGenerator = this->GetAngDist();
   fAngGenerator->SetAngDistType("user");

@@ -74,7 +74,9 @@ else
 	$(LD) -bundle -undefined $(UNDEFOPT) $(LDFLAGS) $(G4WORKDIR)/tmp/$(G4SYSTEM)/simpleGeantSim/ScintHitInfo.o   $(G4WORKDIR)/tmp/$(G4SYSTEM)/simpleGeantSim/sgsCint.o -o $@.so
 endif
 else
-	$(LD) $(SOFLAGS) $(LDFLAGS) $(G4WORKDIR)/tmp/$(G4SYSTEM)/simpleGeantSim/ScintHitInfo.o   $(G4WORKDIR)/tmp/$(G4SYSTEM)/simpleGeantSim/sgsCint.o $(LIBS) -o $@
+ifneq ($(PLATFORM),win32)
+	$(LD) $(SOFLAGS) $(LDFLAGS) $(G4WORKDIR)/tmp/$(G4SYSTEM)/simpleGeantSim/ScintHitInfo.o   $(G4WORKDIR)/tmp/$(G4SYSTEM)/simpleGeantSim/sgsCint.o $(LIBS) -o $@.so
+endif
 endif
 
 
