@@ -46,6 +46,7 @@
 CosmicRayFluxParticleSource::CosmicRayFluxParticleSource(DetectorConstruction *detConPtr)
   :G4SingleParticleSource(),fMyDetCon(detConPtr)
 {
+  G4double verticalSeparation=fMyDetCon->getVerticalSeparation();
   G4double sideLength=fMyDetCon->getScintPlaneLength();
   G4double planeWidth=fMyDetCon->getScintPlaneWidth();
   G4double planeGap=fMyDetCon->getScintPlaneGap();
@@ -54,12 +55,12 @@ CosmicRayFluxParticleSource::CosmicRayFluxParticleSource(DetectorConstruction *d
   G4SPSPosDistribution *fPosGenerator = this->GetPosDist();
   fPosGenerator->SetPosDisType("Plane");
   fPosGenerator->SetPosDisShape("Square");
-  G4double zHeight=(sideLength/2 + (numPlanes-1)*planeGap + numPlanes*planeWidth);
+  G4double zHeight=(verticalSeparation/2. + (numPlanes-1)*planeGap + numPlanes*planeWidth);
   fPosGenerator->SetCentreCoords(G4ThreeVector(0,0,zHeight));
   fPosGenerator->SetHalfX(sideLength/2);
   fPosGenerator->SetHalfY(sideLength/2);
   
-  G4cout << "Generate at z: " << zHeight << "\twhalfwidth" << sideLength/2 << "\n";
+  G4cout << "Generate at z: " << zHeight << "\thalfwidth " << sideLength/2 << "\n";
 
   G4SPSAngDistribution *fAngGenerator = this->GetAngDist();
   fAngGenerator->SetAngDistType("user");
