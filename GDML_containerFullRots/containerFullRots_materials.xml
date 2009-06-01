@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!--   GDML materials definition from the Fastrad file : "containerFullRot.ray"
+	Processed the 26/05/2009 at 20h04 by the GDML module of Fastrad 3.0 -->
+
+<materials>
+	<element name="videRef" formula="VACUUM" Z="1">
+		<atom value="1"/>
+	</element>
+	<element name="aluminum" formula="Al" Z="13">
+		<atom value="26.9815"/>
+	</element>
+	<element name="silicon" formula="Si" Z="14">
+		<atom value="28.0855"/>
+	</element>
+	<element name="Fe" formula="Fe" Z="14">
+	  <atom value="55.85"/>
+	</element>
+	<element name="C" formula="C" Z="6">
+	  <atom value="12.011"/>
+	</element>
+	<element name="Co" formula="Co" Z="27">
+	  <atom value="58.9332"/>
+	</element>
+	<material name="ssteel" formula="ssteel">
+	  <D value ="7.7" unit="g/cm3"/>
+	  <fraction n="0.8800" ref="Fe"/>
+	  <fraction n="0.040" ref="C"/>
+	  <fraction n="0.080" ref="Co"/>
+	</material>
+	<material name="Vacuum" formula="Vacuum">
+		<D value ="1E-25" unit="g/cm3"/>
+		<fraction n="1.0" ref="videRef"/>
+	</material>
+	<material name="ALUMINUM_Al" formula="ALUMINUM_Al">
+		<D value ="2.7000" unit="g/cm3"/>
+		<fraction n="1.0000" ref="aluminum"/>
+	</material>
+	<material name="SILICON_Si" formula="SILICON_Si">
+		<D value ="2.3300" unit="g/cm3"/>
+		<fraction n="1.0000" ref="silicon"/>
+	</material>
+</materials>
+
+
