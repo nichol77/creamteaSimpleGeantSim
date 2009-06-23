@@ -60,6 +60,8 @@
 #include "RunAction.hh"
 #include "DataInput.hh"
 
+#include <unistd.h>
+
 //#define G4VIS_USE_OPENGL
 //#undef G4VIS_USE
 
@@ -67,14 +69,27 @@
 
 int main(int argc,char** argv){
   char outputName[FILENAME_MAX];
+  long pidVal = (long) getpid();
+  long timeVal = (long) time(NULL);
+  long seedVal=0;
   if(argc==3) {
     sprintf(outputName,argv[2]);
     DataInput *dataPtr = DataInput::GetDataInput();
     dataPtr->NtupleName=argv[2];
+    seedVal=timeVal/pidVal;
   }
   //--------------------------------------------------
   // Choose the Random engine
-  CLHEP::HepRandom::setTheEngine(new CLHEP::RanecuEngine);
+  
+  G4cout << "The seed is: " << seedVal << "\n";
+  CLHEP::RanecuEngine *theEngine = new CLHEP::RanecuEngine();
+  if(seedVal) {
+    long seedArray[2]={timeVal,pidVal};
+    theEngine->setSeeds(seedArray,seedVal);
+  }
+  CLHEP::HepRandom::setTheEngine(theEngine);
+  CLHEP::HepRandom::showEngineStatus();
+  theEngine->showStatus();
 
   //--------------------------------------------------
   // Construct the default run manager

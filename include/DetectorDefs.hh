@@ -5,7 +5,7 @@
 #define WORLD_SIZE 15
 
 //Vertical Separation in m
-#define VERTICAL_SEPARATION 3
+#define VERTICAL_SEPARATION 13
 
 // Long side length given in m
 #define SIDELENGTH 13
@@ -34,8 +34,8 @@
 
 // background if true only an empty room is imaged
 #define BACKGROUND 0
-#define SPHERE_RADIUS_CM 30
-#define SPHERE_DENSITY_KG_M3 7800
+#define SPHERE_RADIUS_CM 10
+#define SPHERE_DENSITY_KG_M3 19000
 #define SPHERE_X_M 0
 #define SPHERE_Y_M 0
 #define SPHERE_Z_M 0

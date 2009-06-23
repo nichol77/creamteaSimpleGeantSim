@@ -23,7 +23,9 @@ class WorldSetup : public TObject
   Int_t stripsPerPlane; ///< Number of strips per plane
   Double_t planeWidth; ///< Plane width in m
   Double_t gapBetweenPlanes; ///< Gap between planes in m
-  
+   Double_t verticalSeparation; ///< Vertical Separation of Z-planes
+   
+
   Int_t background; ///< 0 means target present
   Double_t sphereRadius; ///< Radius of sphere in m
   Double_t sphereDensity; ///< Density in kg/m3
@@ -35,7 +37,7 @@ class WorldSetup : public TObject
 
 
  private:
-  ClassDef(WorldSetup ,1) // WorldSetup
+  ClassDef(WorldSetup ,2) // WorldSetup
     
 };
 

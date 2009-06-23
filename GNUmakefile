@@ -67,7 +67,7 @@ sgsCint: include/ScintHitInfo.hh include/WorldSetup.hh Linkdef.h
 libsgsdict:  $(G4WORKDIR)/tmp/$(G4SYSTEM)/simpleGeantSim/ScintHitInfo.o sgsCint $(G4WORKDIR)/tmp/$(G4SYSTEM)/simpleGeantSim/sgsCint.o 
 ifeq ($(PLATFORM),macosx)
 # We need to make both the .dylib and the .so
-	$(LD) $(SOFLAGS) $(G4WORKDIR)/tmp/$(G4SYSTEM)/simpleGeantSim/ScintHitInfo.o   $(G4WORKDIR)/tmp/$(G4SYSTEM)/simpleGeantSim/sgsCint.o -o libsgsdict.dylib
+	$(LD) $(SOFLAGS) $(G4WORKDIR)/tmp/$(G4SYSTEM)/simpleGeantSim/ScintHitInfo.o   $(G4WORKDIR)/tmp/$(G4SYSTEM)/simpleGeantSim/sgsCint.o -o $@.dylib
 ifeq ($(MACOSX_MINOR),4)
 	ln -sf $@.dylib $@.so
 else

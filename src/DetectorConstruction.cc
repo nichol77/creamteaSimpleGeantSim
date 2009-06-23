@@ -92,19 +92,21 @@ G4VPhysicalVolume* DetectorConstruction::Construct()
 
 
   //------------------------------ experimental hall (world volume)
+  //Only include these lines if we are doing a no-container test
+//  sWorld = new G4Box("sWorld", Data->WorldX/2, Data->WorldY/2, Data->WorldZ/2);
+  
+ // lvWorld = new G4LogicalVolume(sWorld,	 Air, "lvWorld");
+  
+ // pvWorld = new G4PVPlacement(0, G4ThreeVector(0.0,0.0,0.0), lvWorld, "pvWorld", 0, false, 0);
 
-  //  sWorld = new G4Box("sWorld", Data->WorldX/2, Data->WorldY/2, Data->WorldZ/2);
 
-  //  lvWorld = new G4LogicalVolume(sWorld,	 Air, "lvWorld");
-
-  //pvWorld = new G4PVPlacement(0, G4ThreeVector(0.0,0.0,0.0), lvWorld, "pvWorld", 0, false, 0);
-
+  //These are the the lines needed to include the container
   //gpt read in world and target information for gdml file.
-  parser.SetOverlapCheck(true);
-  parser.Read(fReadFile);
-  pvWorld = parser.GetWorldVolume();
-  lvWorld = pvWorld->GetLogicalVolume();
-  //  sWorld = lvWorld->GetSolid();
+    parser.SetOverlapCheck(true);
+    parser.Read(fReadFile);
+    pvWorld = parser.GetWorldVolume();
+    lvWorld = pvWorld->GetLogicalVolume();
+//    sWorld = lvWorld->GetSolid();
   G4cout << lvWorld->GetName() << "\n";
 
   //--------------------------------------------------
@@ -200,7 +202,7 @@ G4VPhysicalVolume* DetectorConstruction::Construct()
   // Target Addition
   //--------------------------------------------------------------------
   if(fTarget) {
-    // fTarget->constructTarget(pvWorld);
+     fTarget->constructTarget(pvWorld);
   }
 
 

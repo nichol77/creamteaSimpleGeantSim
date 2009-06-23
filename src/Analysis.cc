@@ -104,6 +104,7 @@ void Analysis::book(){
     myWorld->sphereOriginX=SPHERE_X_M;
     myWorld->sphereOriginY=SPHERE_Y_M;
     myWorld->sphereOriginZ=SPHERE_Z_M;
+    myWorld->verticalSeparation=VERTICAL_SEPARATION;
 
       
 
