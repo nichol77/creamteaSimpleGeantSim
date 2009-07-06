@@ -32,8 +32,9 @@
 //Rotate each plane by 90??
 #define ROTATE_EVERY_PLANE 1
 
-// background if true only an empty room is imaged
-#define BACKGROUND 0
+
+#define CONTAINER 1 // Whether to include the container or not
+#define BACKGROUND 0 // background if true only an empty room is imaged
 #define SPHERE_RADIUS_CM 10
 #define SPHERE_DENSITY_KG_M3 19000
 #define SPHERE_X_M 0

@@ -43,23 +43,29 @@ class G4AttValue;
 class ScintillatorHit : public G4VHit
 {
   public:
-
-      ScintillatorHit();
-      ScintillatorHit(G4int plane, G4int strip);
-      virtual ~ScintillatorHit();
-      ScintillatorHit(const ScintillatorHit &right);
-      const ScintillatorHit& operator=(const ScintillatorHit &right);
-      int operator==(const ScintillatorHit &right) const;
-
-      inline void *operator new(size_t);
-      inline void operator delete(void *aHit);
-
-      virtual void Draw();
-      virtual const std::map<G4String,G4AttDef>* GetAttDefs() const;
-      virtual std::vector<G4AttValue>* CreateAttValues() const;
-      virtual void Print();
+  
+  ScintillatorHit();
+  ScintillatorHit(G4int plane, G4int strip);
+  virtual ~ScintillatorHit();
+  ScintillatorHit(const ScintillatorHit &right);
+  const ScintillatorHit& operator=(const ScintillatorHit &right);
+  int operator==(const ScintillatorHit &right) const;
+  
+  inline void *operator new(size_t);
+  inline void operator delete(void *aHit);
+  
+  virtual void Draw();
+  virtual const std::map<G4String,G4AttDef>* GetAttDefs() const;
+  virtual std::vector<G4AttValue>* CreateAttValues() const;
+  virtual void Print();
+  void zeroCounters() { countHits=0; sumX=0; sumY=0; sumZ=0; edep=0;}
+  void weightTruePos(G4ThreeVector xyz, G4double eDep);
 
   private:
+  G4int countHits;
+  G4double sumX;
+  G4double sumY;
+  G4double sumZ;
   G4int fPlaneNum;
   G4int fStripNum;
   G4ThreeVector fTruePos;

@@ -66,6 +66,7 @@ ScintillatorHit::ScintillatorHit(const ScintillatorHit &right)
    fStripNum=right.fStripNum;
   edep = right.edep;
   pos = right.pos;
+  fTruePos = right.fTruePos;
   rot = right.rot;
   pLogV = right.pLogV;
 }
@@ -76,6 +77,7 @@ const ScintillatorHit& ScintillatorHit::operator=(const ScintillatorHit &right)
   fPlaneNum = right.fPlaneNum;
   edep = right.edep;
   pos = right.pos;
+  fTruePos = right.fTruePos;
   rot = right.rot;
   pLogV = right.pLogV;
   return *this;
@@ -84,6 +86,23 @@ const ScintillatorHit& ScintillatorHit::operator=(const ScintillatorHit &right)
 int ScintillatorHit::operator==(const ScintillatorHit &right) const
 {
   return (fPlaneNum==right.fPlaneNum && fStripNum==right.fStripNum);
+}
+
+void ScintillatorHit::weightTruePos(G4ThreeVector xyz, G4double energy)
+{
+  edep+=energy;
+  sumX+=energy*xyz[0];
+  sumY+=energy*xyz[1];
+  sumZ+=energy*xyz[2];
+
+  fTruePos[0]=sumX/edep;
+  fTruePos[1]=sumY/edep;
+  fTruePos[2]=sumZ/edep;
+
+  countHits++;
+
+  //  G4cout << sumZ << "\t" << fTruePos[2] << "\n";
+
 }
 
 void ScintillatorHit::Draw()

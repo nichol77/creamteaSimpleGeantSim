@@ -80,10 +80,17 @@ G4bool ScintillatorSD::ProcessHits(G4Step*aStep,G4TouchableHistory* /*ROhist*/)
   if(edep==0.) return true;
 
   G4StepPoint* preStepPoint = aStep->GetPreStepPoint();
+  G4StepPoint* postStepPoint = aStep->GetPostStepPoint();
   G4TouchableHistory* theTouchable
     = (G4TouchableHistory*)(preStepPoint->GetTouchable());
   G4VPhysicalVolume* thePhysical = theTouchable->GetVolume();
-  G4ThreeVector thePos=preStepPoint->GetPosition();
+  G4ThreeVector thePosPre=preStepPoint->GetPosition();
+  G4ThreeVector thePosPost=postStepPoint->GetPosition();
+
+  G4ThreeVector thePos(0.5*(thePosPre[0]+thePosPost[0]),
+		       0.5*(thePosPre[1]+thePosPost[1]),
+		       0.5*(thePosPre[2]+thePosPost[2]));
+		       
 
   G4int planeNum=0;
   G4int stripNum=0;
@@ -107,18 +114,26 @@ G4bool ScintillatorSD::ProcessHits(G4Step*aStep,G4TouchableHistory* /*ROhist*/)
     aTrans.Invert();
     aHit->SetRot(aTrans.NetRotation());
     aHit->SetPos(aTrans.NetTranslation());
-    aHit->SetTruePos(thePos);
+    aHit->zeroCounters();
 
 
     //    G4cout << edep << "\t" << thePhysical->GetName() << "\t"
     //	 << thePos.getX() << "\t" << thePos.getY() << "\t"
     //	   << thePos.getZ() << "\t" << planeNum << "\t" << stripNum << "\n";
-
     fCountScintHits++;
+    //    G4cout << "New plane, strip "  << planeNum << "\t" << stripNum << "\n";
   }
+
+  aHit->weightTruePos(thePos,edep);
+
+  
+  //    G4cout << "X\t" << aHit->GetTruePos()[0] << "\t" << thePos[0]-aHit->GetTruePos()[0] << "\t" << thePos2[0]-aHit->GetTruePos()[0] << "\n";
+  //    G4cout << "Y\t" << aHit->GetTruePos()[1] << "\t" << thePos[1]-aHit->GetTruePos()[1] << "\t" << thePos2[1]-aHit->GetTruePos()[1] << "\n";
+  //  G4cout << "Z\t" << planeNum << "\t" << stripNum << "\t" << aHit->GetTruePos()[2] << "\t" << thePos[2] << "\t" << edep  << "\t" << aHit->GetEdep() <<"\n";
+  
   // add energy deposition
   //  G4cout << aHit->GetPlane() << "\t" << aHit->GetStrip() << "\t" << thePhysical->GetName() << "\n";
-  aHit->AddEdep(edep);
+
 
   return true;
 }
