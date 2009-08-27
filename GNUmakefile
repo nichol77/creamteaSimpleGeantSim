@@ -44,9 +44,9 @@ endif
 endif
 LD = g++
 SOFLAGS       = -dynamiclib -single_module -undefined $(UNDEFOPT)
-INTYLIBS      += $(ROOTLIBS) -Wl,-dylib_file,/System/Library/Frameworks/OpenGL.framework/Versions/A/Libraries/libGL.dylib:/System/Library/Frameworks/OpenGL.framework/Versions/A/Libraries/libGL.dylib
+INTYLIBS      += $(ROOTLIBS) -dylib_file,/System/Library/Frameworks/OpenGL.framework/Versions/A/Libraries/libGL.dylib:/System/Library/Frameworks/OpenGL.framework/Versions/A/Libraries/libGL.dylib
 else 
-INTYLIBS      += $(ROOTLIBS) -lxerces-c -L/usr/X11R6/lib64
+INTYLIBS      += $(ROOTLIBS) -lxerces-c -L/usr/X11R6/lib64 -L/usr/lib64
 endif
 #  ROOTLIBS      := $(filter-out -lNew,$(ROOTLIBS))
 #  ROOTLIBS      := $(filter-out -lThread,$(ROOTLIBS))
@@ -75,7 +75,8 @@ else
 endif
 else
 ifneq ($(PLATFORM),win32)
-	$(LD) $(SOFLAGS) $(LDFLAGS) $(G4WORKDIR)/tmp/$(G4SYSTEM)/simpleGeantSim/ScintHitInfo.o   $(G4WORKDIR)/tmp/$(G4SYSTEM)/simpleGeantSim/sgsCint.o $(LIBS) -o $@.so
+	echo "LDGLAGS" $(LDFLAGS)
+	g++ $(SOFLAGS) $(LDFLAGS) $(G4WORKDIR)/tmp/$(G4SYSTEM)/simpleGeantSim/ScintHitInfo.o   $(G4WORKDIR)/tmp/$(G4SYSTEM)/simpleGeantSim/sgsCint.o $(LIBS) -o $@.so
 endif
 endif
 

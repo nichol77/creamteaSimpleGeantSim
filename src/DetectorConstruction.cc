@@ -48,8 +48,8 @@ DetectorConstruction::DetectorConstruction(){
   fRotate90=ROTATE_EVERY_PLANE;
   fTotNumScintStrips=2*fNumScintPlanes*fNumScintStrips;	
   fTarget=0;
-  fScintTriHeight=SCINT_TRIANGLE_HEIGHT_CM*cm;
-  fScintTriBase=SCINT_TRIANGLE_BASE_CM*cm;
+  fScintTriHeight=SCINT_TRIANGLE_HEIGHT_MM*mm;
+  fScintTriBase=SCINT_TRIANGLE_BASE_MM*mm;
   fNumScintTriangles=fScintPlaneLength/fScintTriBase;
   detectorMessenger = new DetectorMessenger(this);
 }
@@ -95,7 +95,7 @@ G4VPhysicalVolume* DetectorConstruction::Construct()
   if(CONTAINER) {
     //These are the the lines needed to include the container
     //gpt read in world and target information for gdml file.
-    parser.SetOverlapCheck(true);
+     //    parser.SetOverlapCheck(true);
     parser.Read(fReadFile);
     pvWorld = parser.GetWorldVolume();
     lvWorld = pvWorld->GetLogicalVolume();
@@ -107,6 +107,19 @@ G4VPhysicalVolume* DetectorConstruction::Construct()
     lvWorld = new G4LogicalVolume(sWorld,	 Air, "lvWorld");
     
     pvWorld = new G4PVPlacement(0, G4ThreeVector(0.0,0.0,0.0), lvWorld, "pvWorld", 0, false, 0);
+    if(FAKE_CONTAINER) {
+       //Add a fake box made of steel
+
+       
+       G4Box *sFakeContainer_outer = new G4Box("sFakeContainer_outer", (2.44/2)*m,(12.15/2)*m,(2.59/2)*m);
+       G4LogicalVolume *lvFakeContainer_outer = new G4LogicalVolume(sFakeContainer_outer, Fe, "lvFakeContainer_outer");
+       G4VPhysicalVolume *pvFakeContainer_outer = new G4PVPlacement(0, G4ThreeVector(0.0,0.0,0.0), "pvFakeContainer_outer", lvFakeContainer_outer, pvWorld, false, 0);
+       
+       G4Box *sFakeContainer_inner = new G4Box("sFakeContainer_inner", (2.44/2)*m-5*mm,(12.15/2)*m-5*mm,(2.59/2)*m-5*mm);
+       G4LogicalVolume *lvFakeContainer_inner = new G4LogicalVolume(sFakeContainer_inner, Air, "lvFakeContainer_inner");
+       G4VPhysicalVolume *pvFakeContainer_inner = new G4PVPlacement(0, G4ThreeVector(0.0,0.0,0.0), "pvFakeContainer_inner", lvFakeContainer_inner, pvFakeContainer_outer, false, 0);
+       
+    }
   }
 
   G4cout << lvWorld->GetName() << "\n";
@@ -203,7 +216,30 @@ G4VPhysicalVolume* DetectorConstruction::Construct()
   //--------------------------------------------------------------------
   // Target Addition
   //--------------------------------------------------------------------
-  if(fTarget) {
+
+    if(STEEL_BOX) {
+       //Add a box made of steel
+       
+       G4Box *sSteelBox_outer = new G4Box("sSteelBox_outer", STEEL_BOX_HALF_SIDE_CM*cm,STEEL_BOX_HALF_SIDE_CM*cm,STEEL_BOX_HALF_SIDE_CM*cm);
+       G4LogicalVolume *lvSteelBox_outer = new G4LogicalVolume(sSteelBox_outer, Fe, "lvSteelBox_outer");
+       G4VPhysicalVolume *pvSteelBox_outer = new G4PVPlacement(0, G4ThreeVector(STEEL_BOX_X_M*m,STEEL_BOX_Y_M*m,STEEL_BOX_Z_M*m), "pvSteelBox_outer", lvSteelBox_outer, pvWorld, false, 0);
+       
+       G4Box *sSteelBox_inner = new G4Box("sSteelBox_inner", STEEL_BOX_HALF_SIDE_CM*cm-STEEL_THICKNESS_CM*cm,STEEL_BOX_HALF_SIDE_CM*cm-STEEL_THICKNESS_CM*cm,STEEL_BOX_HALF_SIDE_CM*cm-STEEL_THICKNESS_CM*cm);
+       G4LogicalVolume *lvSteelBox_inner = new G4LogicalVolume(sSteelBox_inner, Air, "lvSteelBox_inner");
+       G4VPhysicalVolume *pvSteelBox_inner = new G4PVPlacement(0, G4ThreeVector(STEEL_BOX_X_M*m,STEEL_BOX_Y_M*m,STEEL_BOX_Z_M*m), "pvSteelBox_inner", lvSteelBox_inner, pvSteelBox_outer, false, 0);
+       
+    }  
+
+
+if(WATER_TANK) {
+    G4Box *sWaterTank = new G4Box("sWaterTank", WATER_BOX_HALF_SIDE_CM*cm,WATER_BOX_HALF_SIDE_CM*cm,WATER_BOX_HALF_SIDE_CM*cm);
+    G4LogicalVolume *lvWaterTank = new G4LogicalVolume(sWaterTank, Water, "lvWaterTank");
+       G4VPhysicalVolume *pvWaterTank = new G4PVPlacement(0, G4ThreeVector(SPHERE_X_M*m,SPHERE_Y_M*m,SPHERE_Z_M*m), "pvWaterTank", lvWaterTank, pvWorld, false, 0);
+
+
+}
+
+ if(fTarget) {
      fTarget->constructTarget(pvWorld);
   }
 

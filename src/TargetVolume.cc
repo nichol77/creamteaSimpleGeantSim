@@ -42,6 +42,9 @@ void TargetVolume::constructTarget(G4VPhysicalVolume *pvWorld)
   //Define the materials
   G4double A;  // atomic mass
   G4double Z;  // atomic number
+  G4double abundance;
+  G4int iz, n, ncomponents;                       //iz=nb of protons  in an isotope; 
+ 
   G4String symbol,name;
   G4double density;//, mass_percent;
   G4Element* elFe = new G4Element("Iron", "Fe", 26, 55.85*g/mole);
@@ -49,7 +52,6 @@ void TargetVolume::constructTarget(G4VPhysicalVolume *pvWorld)
   G4Element* elN = new G4Element(name="Nitrogen", symbol="N", Z=7.,A);
   A = 16.00*g/mole;
   G4Element* elO  = new G4Element(name="Oxygen"  ,symbol="O" , Z= 8, A);
-  // steel
   G4Material* steel = new G4Material ("steel", 7800*kg/m3, 1);
   steel->AddElement (elFe, 100*perCent);
   //aproximatation of steel nails.
@@ -61,20 +63,34 @@ void TargetVolume::constructTarget(G4VPhysicalVolume *pvWorld)
   steelNails->AddMaterial (Air, 22*perCent);
   steelNails->AddElement (elFe, 78*perCent);
 
-
+  //
+  // define an Element from isotopes, by relative abundance 
+  //
+  
+  G4Isotope* U5 = new G4Isotope(name="U235", iz=92, n=235, A=235.01*g/mole);
+  G4Isotope* U8 = new G4Isotope(name="U238", iz=92, n=238, A=238.03*g/mole);
+  
+  G4Element* elU  = new G4Element(name="enriched Uranium", symbol="U", ncomponents=2);
+  elU->AddIsotope(U5, abundance= 90.*perCent);
+  elU->AddIsotope(U8, abundance= 10.*perCent);
+  
+  G4Material *uranium = new G4Material("uranium",SPHERE_DENSITY_KG_M3*kg/m3,1);
+  uranium->AddElement(elU,100*perCent);
   
   
   std::cout << "Adding sphere of radius " << SPHERE_RADIUS_CM << "cm"
-	    << " and density " << SPHERE_DENSITY_KG_M3 << "\n";
-  G4VSolid *sSphereNails = new G4Sphere ("sphereNails", //name
-					 0,             // inner radius
-					   SPHERE_RADIUS_CM*cm,  // outer radius
-					   0,             // start phi
-					   360*deg,       // end phi
-					 0,             // start theta
-					 180*deg);      // end theta
-  G4LogicalVolume *lvSphereNails = new G4LogicalVolume(sSphereNails,steelNails, "lvSphereNails");
-  G4VPhysicalVolume *pvSphereNails = new G4PVPlacement (0,G4ThreeVector (0,0,0), "pvSphereNails",lvSphereNails,pvWorld, false,0);        
-
+	    << " and density " << SPHERE_DENSITY_KG_M3 << "at\t"
+	    << SPHERE_X_M*m << "," << SPHERE_Y_M*m << "," << SPHERE_Z_M*m 
+	    << "\n";
+  G4VSolid *sSphereU = new G4Sphere ("sphereU", //name
+				     0,             // inner radius
+				     SPHERE_RADIUS_CM*cm,  // outer radius
+				     0,             // start phi
+				     360*deg,       // end phi
+				     0,             // start theta
+				     180*deg);      // end theta
+  G4LogicalVolume *lvSphereU = new G4LogicalVolume(sSphereU,uranium,"lvSphereU");
+  G4VPhysicalVolume *pvSphereU = new G4PVPlacement (0,G4ThreeVector (SPHERE_X_M*m,SPHERE_Y_M*m,SPHERE_Z_M*m), "pvSphereU",lvSphereU,pvWorld, false,0);        
+  
 }
 

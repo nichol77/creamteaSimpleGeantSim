@@ -54,6 +54,7 @@
 #endif
 
 #include "DetectorConstruction.hh"
+#include "DetectorDefs.hh"
 #include "PhysicsList.hh"
 #include "PrimaryGeneratorAction.hh"
 #include "SteppingAction.hh"
@@ -99,8 +100,10 @@ int main(int argc,char** argv){
   // Set mandatory initialization classes
   DetectorConstruction* detector = new DetectorConstruction();
   // Any arbitrary target that inherits from TargetVolume can be added here
-  TargetVolume *target = new TargetVolume();
-  detector->setTargetVolume(target);
+  if(!BACKGROUND) {
+     TargetVolume *target = new TargetVolume();
+     detector->setTargetVolume(target);
+  }
 
   runManager->SetUserInitialization(detector);
  
