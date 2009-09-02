@@ -92,6 +92,8 @@ G4VPhysicalVolume* DetectorConstruction::Construct()
 
 
   //------------------------------ experimental hall (world volume)
+  G4VPhysicalVolume *pvInnerMost=0;
+
   if(CONTAINER) {
     //These are the the lines needed to include the container
     //gpt read in world and target information for gdml file.
@@ -99,6 +101,7 @@ G4VPhysicalVolume* DetectorConstruction::Construct()
     parser.Read(fReadFile);
     pvWorld = parser.GetWorldVolume();
     lvWorld = pvWorld->GetLogicalVolume();
+    pvInnerMost=pvWorld;
   }
   else  { 
     //Only include these lines if we are doing a no-container test
@@ -109,8 +112,6 @@ G4VPhysicalVolume* DetectorConstruction::Construct()
     pvWorld = new G4PVPlacement(0, G4ThreeVector(0.0,0.0,0.0), lvWorld, "pvWorld", 0, false, 0);
     if(FAKE_CONTAINER) {
        //Add a fake box made of steel
-
-       
        G4Box *sFakeContainer_outer = new G4Box("sFakeContainer_outer", (2.44/2)*m,(12.15/2)*m,(2.59/2)*m);
        G4LogicalVolume *lvFakeContainer_outer = new G4LogicalVolume(sFakeContainer_outer, Fe, "lvFakeContainer_outer");
        G4VPhysicalVolume *pvFakeContainer_outer = new G4PVPlacement(0, G4ThreeVector(0.0,0.0,0.0), "pvFakeContainer_outer", lvFakeContainer_outer, pvWorld, false, 0);
@@ -118,6 +119,7 @@ G4VPhysicalVolume* DetectorConstruction::Construct()
        G4Box *sFakeContainer_inner = new G4Box("sFakeContainer_inner", (2.44/2)*m-5*mm,(12.15/2)*m-5*mm,(2.59/2)*m-5*mm);
        G4LogicalVolume *lvFakeContainer_inner = new G4LogicalVolume(sFakeContainer_inner, Air, "lvFakeContainer_inner");
        G4VPhysicalVolume *pvFakeContainer_inner = new G4PVPlacement(0, G4ThreeVector(0.0,0.0,0.0), "pvFakeContainer_inner", lvFakeContainer_inner, pvFakeContainer_outer, false, 0);
+       pvInnerMost=pvFakeContainer_inner;
        
     }
   }
@@ -222,11 +224,14 @@ G4VPhysicalVolume* DetectorConstruction::Construct()
        
        G4Box *sSteelBox_outer = new G4Box("sSteelBox_outer", STEEL_BOX_HALF_SIDE_CM*cm,STEEL_BOX_HALF_SIDE_CM*cm,STEEL_BOX_HALF_SIDE_CM*cm);
        G4LogicalVolume *lvSteelBox_outer = new G4LogicalVolume(sSteelBox_outer, Fe, "lvSteelBox_outer");
-       G4VPhysicalVolume *pvSteelBox_outer = new G4PVPlacement(0, G4ThreeVector(STEEL_BOX_X_M*m,STEEL_BOX_Y_M*m,STEEL_BOX_Z_M*m), "pvSteelBox_outer", lvSteelBox_outer, pvWorld, false, 0);
+       G4VPhysicalVolume *pvSteelBox_outer = new G4PVPlacement(0, G4ThreeVector(STEEL_BOX_X_M*m,STEEL_BOX_Y_M*m,STEEL_BOX_Z_M*m), "pvSteelBox_outer", lvSteelBox_outer, pvInnerMost, false, 0);
        
        G4Box *sSteelBox_inner = new G4Box("sSteelBox_inner", STEEL_BOX_HALF_SIDE_CM*cm-STEEL_THICKNESS_CM*cm,STEEL_BOX_HALF_SIDE_CM*cm-STEEL_THICKNESS_CM*cm,STEEL_BOX_HALF_SIDE_CM*cm-STEEL_THICKNESS_CM*cm);
        G4LogicalVolume *lvSteelBox_inner = new G4LogicalVolume(sSteelBox_inner, Air, "lvSteelBox_inner");
-       G4VPhysicalVolume *pvSteelBox_inner = new G4PVPlacement(0, G4ThreeVector(STEEL_BOX_X_M*m,STEEL_BOX_Y_M*m,STEEL_BOX_Z_M*m), "pvSteelBox_inner", lvSteelBox_inner, pvSteelBox_outer, false, 0);
+       //Important, the location of the inner box is relative to the centre of the outer box.
+       //Little so-and-so's
+       G4VPhysicalVolume *pvSteelBox_inner = new G4PVPlacement(0, G4ThreeVector(0,0,0), "pvSteelBox_inner", lvSteelBox_inner, pvSteelBox_outer, false, 0);
+
        
     }  
 
@@ -234,13 +239,13 @@ G4VPhysicalVolume* DetectorConstruction::Construct()
 if(WATER_TANK) {
     G4Box *sWaterTank = new G4Box("sWaterTank", WATER_BOX_HALF_SIDE_CM*cm,WATER_BOX_HALF_SIDE_CM*cm,WATER_BOX_HALF_SIDE_CM*cm);
     G4LogicalVolume *lvWaterTank = new G4LogicalVolume(sWaterTank, Water, "lvWaterTank");
-       G4VPhysicalVolume *pvWaterTank = new G4PVPlacement(0, G4ThreeVector(SPHERE_X_M*m,SPHERE_Y_M*m,SPHERE_Z_M*m), "pvWaterTank", lvWaterTank, pvWorld, false, 0);
-
+       G4VPhysicalVolume *pvWaterTank = new G4PVPlacement(0, G4ThreeVector(SPHERE_X_M*m,SPHERE_Y_M*m,SPHERE_Z_M*m), "pvWaterTank", lvWaterTank, pvInnerMost, false, 0);
+       pvInnerMost=pvWaterTank;
 
 }
 
  if(fTarget) {
-     fTarget->constructTarget(pvWorld);
+     fTarget->constructTarget(pvInnerMost);
   }
 
 

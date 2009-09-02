@@ -37,18 +37,19 @@
 #define CONTAINER 0 // Whether to include the container or not
 #define BACKGROUND 0 // background if true only, don't simulate target
 #define WATER_TANK 0
-#define STEEL_BOX 0
-#define SPHERE_RADIUS_CM 30
+#define STEEL_BOX 1
+#define SPHERE_RADIUS_CM 10
 #define SPHERE_DENSITY_KG_M3 19050
 #define SPHERE_X_M 0.5
-#define SPHERE_Y_M 3
+#define SPHERE_Y_M 1
 #define SPHERE_Z_M 0.5
 #define WATER_BOX_HALF_SIDE_CM 25
-#define STEEL_BOX_X_M 1
+#define STEEL_BOX_X_M -0.5
 #define STEEL_BOX_Y_M 3
-#define STEEL_BOX_Z_M 0
+#define STEEL_BOX_Z_M -0.5
 #define STEEL_BOX_HALF_SIDE_CM 25
 #define STEEL_THICKNESS_CM 1
+
 
 
 
