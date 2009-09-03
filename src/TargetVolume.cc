@@ -90,7 +90,12 @@ void TargetVolume::constructTarget(G4VPhysicalVolume *pvWorld)
 				     0,             // start theta
 				     180*deg);      // end theta
   G4LogicalVolume *lvSphereU = new G4LogicalVolume(sSphereU,uranium,"lvSphereU");
-  G4VPhysicalVolume *pvSphereU = new G4PVPlacement (0,G4ThreeVector (SPHERE_X_M*m,SPHERE_Y_M*m,SPHERE_Z_M*m), "pvSphereU",lvSphereU,pvWorld, false,0);        
+  if(!WATER_TANK) {
+     G4VPhysicalVolume *pvSphereU = new G4PVPlacement (0,G4ThreeVector (SPHERE_X_M*m,SPHERE_Y_M*m,SPHERE_Z_M*m), "pvSphereU",lvSphereU,pvWorld, false,0);        
+  }
+  else {
+     G4VPhysicalVolume *pvSphereU = new G4PVPlacement (0,G4ThreeVector (0,0,0), "pvSphereU",lvSphereU,pvWorld, false,0); 
+  }
   
 }
 

@@ -236,17 +236,22 @@ G4VPhysicalVolume* DetectorConstruction::Construct()
     }  
 
 
-if(WATER_TANK) {
-    G4Box *sWaterTank = new G4Box("sWaterTank", WATER_BOX_HALF_SIDE_CM*cm,WATER_BOX_HALF_SIDE_CM*cm,WATER_BOX_HALF_SIDE_CM*cm);
-    G4LogicalVolume *lvWaterTank = new G4LogicalVolume(sWaterTank, Water, "lvWaterTank");
-       G4VPhysicalVolume *pvWaterTank = new G4PVPlacement(0, G4ThreeVector(SPHERE_X_M*m,SPHERE_Y_M*m,SPHERE_Z_M*m), "pvWaterTank", lvWaterTank, pvInnerMost, false, 0);
+    if(WATER_TANK) {
+       
+       G4Box *sWaterTank_outer = new G4Box("sWaterTank_outer", WATER_BOX_HALF_SIDE_CM*cm,WATER_BOX_HALF_SIDE_CM*cm,WATER_BOX_HALF_SIDE_CM*cm);
+       G4LogicalVolume *lvWaterTank_outer = new G4LogicalVolume(sWaterTank_outer, Fe, "lvWaterTank_outer");
+       G4VPhysicalVolume *pvWaterTank_outer = new G4PVPlacement(0, G4ThreeVector(SPHERE_X_M*m,SPHERE_Y_M*m,SPHERE_Z_M*m), "pvWaterTank_outer", lvWaterTank_outer, pvInnerMost, false, 0);
+       
+       
+       G4Box *sWaterTank = new G4Box("sWaterTank", WATER_BOX_HALF_SIDE_CM*cm-WATER_BOX_SIDE_THICKNESS_MM*mm,WATER_BOX_HALF_SIDE_CM*cm-WATER_BOX_SIDE_THICKNESS_MM*mm,WATER_BOX_HALF_SIDE_CM*cm-WATER_BOX_SIDE_THICKNESS_MM*mm);
+       G4LogicalVolume *lvWaterTank = new G4LogicalVolume(sWaterTank, Water, "lvWaterTank");
+       G4VPhysicalVolume *pvWaterTank = new G4PVPlacement(0, G4ThreeVector(0,0,0), "pvWaterTank", lvWaterTank, pvWaterTank_outer, false, 0);
        pvInnerMost=pvWaterTank;
-
-}
-
- if(fTarget) {
-     fTarget->constructTarget(pvInnerMost);
-  }
+    }
+    
+    if(fTarget) {
+       fTarget->constructTarget(pvInnerMost);
+    }
 
 
   //------------------------------------------------------------------
