@@ -6,22 +6,24 @@
 
 //Vertical Separation in m
 #define VERTICAL_SEPARATION 13
-
 // Long side length given in m
 #define SIDELENGTH 13
-
 // Short side length given in m
 #define SHORT_SIDELENGTH 3
-
 //Number of planes per detector stack
 #define PLANES_PER_SIDE 8
-
 //Number of strips per plane
 #define STRIPS_PER_PLANE 650  //Was 650
 
 //Some definitions for the MINERVA style planes
+#define USE_MINERVA_STRIPS 1
 #define SCINT_TRIANGLE_HEIGHT_MM 17
 #define SCINT_TRIANGLE_BASE_MM 33
+#define SCINT_Y_NUM_STRIPS 400
+#define SCINT_Y_STRIP_LENGTH_M 13
+#define SCINT_X_NUM_STRIPS 400
+#define SCINT_X_STRIP_LENGTH_M 13
+
 
 //Gap between planes in cm
 #define GAP_BETWEEN_PLANES_CM 10

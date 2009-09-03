@@ -56,6 +56,8 @@ class DetectorConstruction : public G4VUserDetectorConstruction
   G4double getWorldSize() {return fWorldSize;}
   G4int getNumScintPlanes() {return fNumScintPlanes;}
   G4int getNumScintStrips() {return fNumScintStrips;}
+  G4int getNumScintTrianglesX() {return fNumScintTrianglesX;}
+  G4int getNumScintTrianglesY() {return fNumScintTrianglesY;}
   G4double getScintPlaneGap() {return fScintPlaneGap;}
   G4double getScintPlaneLength() {return fScintPlaneLength;}
   G4double getScintPlaneWidth() {return fScintPlaneWidth;}
@@ -99,7 +101,10 @@ class DetectorConstruction : public G4VUserDetectorConstruction
   //Variables for the toblerone shape
   G4double fScintTriHeight;
   G4double fScintTriBase;
-  G4int fNumScintTriangles;
+   G4double fScintTriLengthX;
+   G4double fScintTriLengthY;
+   G4int fNumScintTrianglesX;
+   G4int fNumScintTrianglesY;
 
   G4int fRotate90; //Is each plane rotated by 90?
   G4int fTotNumScintStrips;

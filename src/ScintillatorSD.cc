@@ -29,6 +29,7 @@
 #include "ScintillatorSD.hh"
 #include "ScintillatorHit.hh"
 #include "DetectorConstruction.hh"
+#include "DetectorDefs.hh"
 #include "Analysis.hh"
 
 #include "G4HCofThisEvent.hh"
@@ -47,9 +48,16 @@ ScintillatorSD::ScintillatorSD(G4String name, DetectorConstruction *detConPtr)
   HCID = -1;
   fCountScintHits=0;
   hitsCollection=0;
-  fNumScintPlanes=detConPtr->getNumScintPlanes();
-  fNumScintStrips=detConPtr->getNumScintStrips();
-
+  if(!USE_MINERVA_STRIPS) {
+     fNumScintPlanes=detConPtr->getNumScintPlanes();
+     fNumScintStrips=detConPtr->getNumScintStrips();
+  }
+  else {
+     fNumScintPlanes=detConPtr->getNumScintPlanes();
+     fNumScintStrips=detConPtr->getNumScintTrianglesX();
+     if(detConPtr->getNumScintTrianglesY()>fNumScintStrips)
+	fNumScintStrips=detConPtr->getNumScintTrianglesY();
+  }
 }
 
 ScintillatorSD::~ScintillatorSD(){;}
@@ -97,10 +105,26 @@ G4bool ScintillatorSD::ProcessHits(G4Step*aStep,G4TouchableHistory* /*ROhist*/)
 
   //There is almost certainly a better way to determine which plane and strip
   //but for now this lazy method will just about work
-  sscanf(thePhysical->GetName().data(),
-	 "av_1_impr_%d_lvScintStrip_pv_%d",
-	 &planeNum,&stripNum);
 
+  if(!USE_MINERVA_STRIPS) {
+     sscanf(thePhysical->GetName().data(),
+	    "av_1_impr_%d_lvScintStrip_pv_%d",
+	    &planeNum,&stripNum);
+  }
+  else {
+     int avNum=0;
+     char XorY='a';
+     sscanf(thePhysical->GetName().data(),
+	    "av_%d_impr_%d_lvScintTriangle%c_pv_%d",
+	    &avNum,&planeNum,&XorY,&stripNum);
+     planeNum*=2;
+     if(avNum==1)
+	planeNum-=1;
+     
+
+  }
+  //  G4cerr << thePhysical->GetName().data() << "\t" 
+  //	 << planeNum << "\t" << stripNum << "\n";
   
   int logInd=(stripNum) + fNumScintStrips*(planeNum-1);
 
@@ -127,12 +151,12 @@ G4bool ScintillatorSD::ProcessHits(G4Step*aStep,G4TouchableHistory* /*ROhist*/)
   aHit->weightTruePos(thePos,edep);
 
   
-  //    G4cout << "X\t" << aHit->GetTruePos()[0] << "\t" << thePos[0]-aHit->GetTruePos()[0] << "\t" << thePos2[0]-aHit->GetTruePos()[0] << "\n";
-  //    G4cout << "Y\t" << aHit->GetTruePos()[1] << "\t" << thePos[1]-aHit->GetTruePos()[1] << "\t" << thePos2[1]-aHit->GetTruePos()[1] << "\n";
-  //  G4cout << "Z\t" << planeNum << "\t" << stripNum << "\t" << aHit->GetTruePos()[2] << "\t" << thePos[2] << "\t" << edep  << "\t" << aHit->GetEdep() <<"\n";
+  //     G4cout << "X\t" << aHit->GetTruePos()[0] << "\t" << thePos[0]-aHit->GetTruePos()[0] << "\t" << thePos2[0]-aHit->GetTruePos()[0] << "\n";
+  //     G4cout << "Y\t" << aHit->GetTruePos()[1] << "\t" << thePos[1]-aHit->GetTruePos()[1] << "\t" << thePos2[1]-aHit->GetTruePos()[1] << "\n";
+  //   G4cout << "Z\t" << planeNum << "\t" << stripNum << "\t" << aHit->GetTruePos()[2] << "\t" << thePos[2] << "\t" << edep  << "\t" << aHit->GetEdep() <<"\n";
   
-  // add energy deposition
-  //  G4cout << aHit->GetPlane() << "\t" << aHit->GetStrip() << "\t" << thePhysical->GetName() << "\n";
+  //  add energy deposition
+  //   G4cout << aHit->GetPlane() << "\t" << aHit->GetStrip() << "\t" << thePhysical->GetName() << "\n";
 
 
   return true;

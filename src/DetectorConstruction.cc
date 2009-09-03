@@ -50,7 +50,16 @@ DetectorConstruction::DetectorConstruction(){
   fTarget=0;
   fScintTriHeight=SCINT_TRIANGLE_HEIGHT_MM*mm;
   fScintTriBase=SCINT_TRIANGLE_BASE_MM*mm;
-  fNumScintTriangles=fScintPlaneLength/fScintTriBase;
+  fScintTriLengthX=SCINT_X_STRIP_LENGTH_M*m;
+  fScintTriLengthY=SCINT_Y_STRIP_LENGTH_M*m;  
+  fNumScintTrianglesX=SCINT_X_NUM_STRIPS;
+  fNumScintTrianglesY=SCINT_Y_NUM_STRIPS;
+  if(USE_MINERVA_STRIPS) {
+     fTotNumScintStrips=2*fNumScintPlanes*fNumScintTrianglesX;
+     if(fNumScintTrianglesY>fNumScintTrianglesX)
+	fTotNumScintStrips=2*fNumScintPlanes*fNumScintTrianglesY;
+  }
+     
   detectorMessenger = new DetectorMessenger(this);
 }
 
@@ -129,91 +138,139 @@ G4VPhysicalVolume* DetectorConstruction::Construct()
   //--------------------------------------------------
   // For now what we'll try and do is just make three scintillator planes at the top, 
   // and three at the bottom. 
+  G4LogicalVolume *lvScintStrip=0;
+  G4LogicalVolume *lvScintTriangleX=0;
+  G4LogicalVolume *lvScintTriangleY=0;
 
   
-  //Now lets try and make a scintillator plane stack
-  //Define a scintillator strip x is the width, y is the length, z is the thickness
-  G4Box *scintStripBox = new G4Box("scintStripBox",scintStripWidth/2.,
-				   fScintPlaneLength/2.,fScintPlaneWidth/2.);
-  G4LogicalVolume *lvScintStrip 
-     = new G4LogicalVolume(scintStripBox,Scintillator,"lvScintStrip",0,0,0);
+  if(!USE_MINERVA_STRIPS) {
+     //Now lets try and make a scintillator plane stack
+     //Define a scintillator strip x is the width, y is the length, z is the thickness
+     G4Box *scintStripBox = new G4Box("scintStripBox",scintStripWidth/2.,
+				      fScintPlaneLength/2.,fScintPlaneWidth/2.);
+     lvScintStrip 
+	= new G4LogicalVolume(scintStripBox,Scintillator,"lvScintStrip",0,0,0);
+
+     //First we'll assemble all the strips in one plane then, we'll try and stack the planes
+     G4AssemblyVolume *assemblyDetector = new G4AssemblyVolume();
+     
+     //These are the roatation and translation of the strip in the plane
+     G4RotationMatrix Ra;
+     G4ThreeVector Ta;
+     
+     Ta.setY(0);
+     Ta.setZ(0);
+     for(G4int stripNum=0;stripNum<fNumScintStrips;stripNum++) {
+	Ta.setX(-fScintPlaneLength/2. + (stripNum+0.5)*scintStripWidth);
+	//     G4cout << Ta.getX() << "\n";
+	assemblyDetector->AddPlacedVolume(lvScintStrip,Ta,&Ra);
+     }
+     
+     //So now we have hopefully assembled a scintillator plane, now we can to 
+     //add it to the world
+     //First up is the top side
+     for(G4int planeNum=0;planeNum<fNumScintPlanes;planeNum++) {
+	G4ThreeVector Tm(0,0,fVerticalHeight/2. + planeNum*fScintPlaneGap);
+	G4RotationMatrix Rm; //Will do this in a second
+	if(planeNum%2==1) Rm.rotateZ(90*deg);
+	assemblyDetector->MakeImprint(lvWorld,Tm,&Rm);
+     }
+     //Then we'll do the bottom side
+     for(G4int planeNum=0;planeNum<fNumScintPlanes;planeNum++) {
+	G4ThreeVector Tm(0,0,-fVerticalHeight/2. - planeNum*fScintPlaneGap);
+	G4RotationMatrix Rm; //Will do this in a second
+	if(planeNum%2==1) Rm.rotateZ(90*deg);
+	assemblyDetector->MakeImprint(lvWorld,Tm,&Rm);
+     }
+  }
+  else {     
+     //     Now lets try and make a scintillator plane stack
+     //  Define a scintillator strip x is the width, y is the length, z is the thickness
+     
+     //  This is a toblerone shape with triangle height fScintTriHeight (in Z), triangle base fScintTriBase (in x) and strip length fScintPlaneLength (in y).
+  G4Trap *scintTobleroneX = new G4Trap("scintTobleroneX",
+				       0.5*fScintTriBase,0.001*mm,
+				       0.5*fScintTriLengthX,
+				       0.5*fScintTriLengthX,
+				       0.5*fScintTriHeight);
+  lvScintTriangleX 
+     = new G4LogicalVolume(scintTobleroneX,Scintillator,"lvScintTriangleX",0,0,0);
+  
+  //Now for the other orientation of strip
+  G4Trap *scintTobleroneY = new G4Trap("scintTobleroneY",
+				       0.5*fScintTriLengthY,
+				       0.5*fScintTriLengthY,
+				       0.5*fScintTriBase,
+				       0.001*mm,
+				       0.5*fScintTriHeight);
+  lvScintTriangleY 
+     = new G4LogicalVolume(scintTobleroneY,Scintillator,"lvScintTriangleY",0,0,0);
+  
 
   //First we'll assemble all the strips in one plane then, we'll try and stack the planes
-  G4AssemblyVolume *assemblyDetector = new G4AssemblyVolume();
-  
+  G4AssemblyVolume *assemblyDetectorX = new G4AssemblyVolume();  
   //These are the roatation and translation of the strip in the plane
-  G4RotationMatrix Ra;
-  G4ThreeVector Ta;
-
-  Ta.setY(0);
-  Ta.setZ(0);
-  for(G4int stripNum=0;stripNum<fNumScintStrips;stripNum++) {
-     Ta.setX(-fScintPlaneLength/2. + (stripNum+0.5)*scintStripWidth);
+  G4ThreeVector Tax;
+  Tax.setY(0);
+  Tax.setZ(0);
+  Double_t stripZeroX=0;  
+  stripZeroX=-1*((fNumScintTrianglesX/2)*(fScintTriBase/2.));
+  if(fNumScintTrianglesX%2==0) {
+     stripZeroX+=fScintTriBase/4.;
+  }
+  for(G4int stripNum=0;stripNum<fNumScintTrianglesX;stripNum++) {
+     Tax.setX(stripZeroX+(stripNum*fScintTriBase/2.));
+     G4RotationMatrix Rax;
+     if(stripNum%2==1) Rax.rotateY(180*deg);
      //     G4cout << Ta.getX() << "\n";
-     assemblyDetector->AddPlacedVolume(lvScintStrip,Ta,&Ra);
+     assemblyDetectorX->AddPlacedVolume(lvScintTriangleX,Tax,&Rax);
+  }
+
+
+  //First we'll assemble all the strips in one plane then, we'll try and stack the planes
+  G4AssemblyVolume *assemblyDetectorY = new G4AssemblyVolume();  
+  //These are the roatation and translation of the strip in the plane
+  G4ThreeVector Tay;
+  Tay.setX(0);
+  Tay.setY(0);
+  Tay.setZ(0);
+  Double_t stripZeroY=0;  
+  stripZeroY=-1*((fNumScintTrianglesY/2)*(fScintTriBase/2.));
+  if(fNumScintTrianglesY%2==0) {
+     stripZeroY+=fScintTriBase/4.;
+  }
+  for(G4int stripNum=0;stripNum<fNumScintTrianglesY;stripNum++) {
+     Tay.setY(stripZeroY+(stripNum*fScintTriBase/2.));
+     G4RotationMatrix Ray;
+     if(stripNum%2==1) Ray.rotateX(180*deg);
+     //     G4cout << Ta.getY() << "\n";
+     assemblyDetectorY->AddPlacedVolume(lvScintTriangleY,Tay,&Ray);
   }
   
+  
+
   //So now we have hopefully assembled a scintillator plane, now we can to 
   //add it to the world
   //First up is the top side
   for(G4int planeNum=0;planeNum<fNumScintPlanes;planeNum++) {
      G4ThreeVector Tm(0,0,fVerticalHeight/2. + planeNum*fScintPlaneGap);
      G4RotationMatrix Rm; //Will do this in a second
-     if(planeNum%2==1) Rm.rotateZ(90*deg);
-     assemblyDetector->MakeImprint(lvWorld,Tm,&Rm);
+     if(planeNum %2 == 0)
+	assemblyDetectorX->MakeImprint(lvWorld,Tm,&Rm);
+     if(planeNum %2 == 1)
+	assemblyDetectorY->MakeImprint(lvWorld,Tm,&Rm);
   }
   //Then we'll do the bottom side
   for(G4int planeNum=0;planeNum<fNumScintPlanes;planeNum++) {
      G4ThreeVector Tm(0,0,-fVerticalHeight/2. - planeNum*fScintPlaneGap);
      G4RotationMatrix Rm; //Will do this in a second
-     if(planeNum%2==1) Rm.rotateZ(90*deg);
-     assemblyDetector->MakeImprint(lvWorld,Tm,&Rm);
+     if(planeNum %2 == 0)
+	assemblyDetectorX->MakeImprint(lvWorld,Tm,&Rm);
+     if(planeNum %2 == 1)
+	assemblyDetectorY->MakeImprint(lvWorld,Tm,&Rm);
   }
-  
-
-  //Now lets try and make a scintillator plane stack
-  //Define a scintillator strip x is the width, y is the length, z is the thickness
-
-  //This is a toblerone shape with triangle height fScintTriHeight (in Z), triangle base fScintTriBase (in x) and strip length fScintPlaneLength (in y).
-//   G4Trap *scintToblerone = new G4Trap("scintToblerone",
-// 				      fScintTriBase,0,
-// 				      fScintPlaneLength,fScintPlaneLength,
-// 				      fScintTriHeight
-//   G4LogicalVolume *lvScintTriangle 
-//      = new G4LogicalVolume(scintStripBox,Scintillator,"lvScintTriangle",0,0,0);
-
-//   //First we'll assemble all the strips in one plane then, we'll try and stack the planes
-//   G4AssemblyVolume *assemblyDetector = new G4AssemblyVolume();
-  
-//   //These are the roatation and translation of the strip in the plane
-//   G4RotationMatrix Ra;
-//   G4ThreeVector Ta;
-
-//   Ta.setY(0);
-//   Ta.setZ(0);
-//   for(G4int stripNum=0;stripNum<fNumScintStrips;stripNum++) {
-//      Ta.setX(-fScintPlaneLength/2. + (stripNum+0.5)*scintStripWidth);
-//      //     G4cout << Ta.getX() << "\n";
-//      assemblyDetector->AddPlacedVolume(lvScintTriangle,Ta,&Ra);
-//   }
-  
-//   //So now we have hopefully assembled a scintillator plane, now we can to 
-//   //add it to the world
-//   //First up is the top side
-//   for(G4int planeNum=0;planeNum<fNumScintPlanes;planeNum++) {
-//      G4ThreeVector Tm(0,0,fVerticalHeight/2. + planeNum*fScintPlaneGap);
-//      G4RotationMatrix Rm; //Will do this in a second
-//      if(planeNum%2==1) Rm.rotateZ(90*deg);
-//      assemblyDetector->MakeImprint(lvWorld,Tm,&Rm);
-//   }
-//   //Then we'll do the bottom side
-//   for(G4int planeNum=0;planeNum<fNumScintPlanes;planeNum++) {
-//      G4ThreeVector Tm(0,0,-fVerticalHeight/2. - planeNum*fScintPlaneGap);
-//      G4RotationMatrix Rm; //Will do this in a second
-//      if(planeNum%2==1) Rm.rotateZ(90*deg);
-//      assemblyDetector->MakeImprint(lvWorld,Tm,&Rm);
-//   }
-  
+  }
+ 
 
   //--------------------------------------------------------------------
   // Target Addition
@@ -234,6 +291,7 @@ G4VPhysicalVolume* DetectorConstruction::Construct()
 
        
     }  
+
 
 
     if(WATER_TANK) {
@@ -257,13 +315,20 @@ G4VPhysicalVolume* DetectorConstruction::Construct()
   //------------------------------------------------------------------
   //  Sensitive Detector
   //  ------------------------------------------------------------------
-
+ 
   G4SDManager* SDman = G4SDManager::GetSDMpointer();
   G4String scintSDName = "/mydet/scint";
   ScintillatorSD  *scintSD = new ScintillatorSD(scintSDName,this);
   SDman->AddNewDetector(scintSD);
-  lvScintStrip->SetSensitiveDetector(scintSD);
+  if(!USE_MINERVA_STRIPS) {
+     lvScintStrip->SetSensitiveDetector(scintSD);
+  }
+  else {
+     lvScintTriangleX->SetSensitiveDetector(scintSD);
+     lvScintTriangleY->SetSensitiveDetector(scintSD);
+  }
     
+
 
   Analysis::getInstance()->setTotNumScintStrips(fTotNumScintStrips);
   Analysis::getInstance()->setNumScintPlanes(fNumScintPlanes);

@@ -105,8 +105,23 @@ void Analysis::book(){
     myWorld->sphereOriginY=SPHERE_Y_M;
     myWorld->sphereOriginZ=SPHERE_Z_M;
     myWorld->verticalSeparation=VERTICAL_SEPARATION;
-
-      
+    myWorld->minervaStrips=USE_MINERVA_STRIPS;
+    myWorld->scintTriBase=SCINT_TRIANGLE_BASE_MM*0.001;
+    myWorld->scintTriHeight=SCINT_TRIANGLE_HEIGHT_MM*0.001;
+    myWorld->scintTriLengthX=SCINT_X_STRIP_LENGTH_M;
+    myWorld->scintTriLengthY=SCINT_Y_STRIP_LENGTH_M;
+    myWorld->numScintTriX=SCINT_X_NUM_STRIPS;
+    myWorld->numScintTriY=SCINT_Y_NUM_STRIPS;
+    myWorld->realOrFakeContainer=FAKE_CONTAINER;
+    myWorld->waterTankFlag=WATER_TANK;
+    myWorld->steelBoxFlag=STEEL_BOX;
+    myWorld->waterBoxHalfSide=WATER_BOX_HALF_SIDE_CM*0.01;
+    myWorld->waterBoxSteelThickness=WATER_BOX_SIDE_THICKNESS_MM*0.001;
+    myWorld->steelBoxX=STEEL_BOX_X_M;
+    myWorld->steelBoxY=STEEL_BOX_Y_M;
+    myWorld->steelBoxZ=STEEL_BOX_Z_M;
+    myWorld->steelBoxHalfSide=STEEL_BOX_HALF_SIDE_CM*0.01;
+    myWorld->steelThickness=STEEL_THICKNESS_CM*0.01;
 
     fScintHitArray = new TClonesArray("ScintHitInfo",1000);
 
