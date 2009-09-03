@@ -55,11 +55,15 @@ DetectorConstruction::DetectorConstruction(){
   fNumScintTrianglesX=SCINT_X_NUM_STRIPS;
   fNumScintTrianglesY=SCINT_Y_NUM_STRIPS;
   if(USE_MINERVA_STRIPS) {
+     fScintPlaneWidth=fScintTriHeight;
+     fScintPlaneLength=2*getLongestScintHalfLength();
      fTotNumScintStrips=2*fNumScintPlanes*fNumScintTrianglesX;
      if(fNumScintTrianglesY>fNumScintTrianglesX)
 	fTotNumScintStrips=2*fNumScintPlanes*fNumScintTrianglesY;
   }
-     
+  Data->muonGenerationArea=(fScintPlaneLength*0.001)*(fScintPlaneLength*0.001);
+  Data->scintPlaneWidth=fScintPlaneWidth;
+  Data->scintSideLength=fScintPlaneLength;
   detectorMessenger = new DetectorMessenger(this);
 }
 
@@ -336,3 +340,20 @@ G4VPhysicalVolume* DetectorConstruction::Construct()
   return pvWorld;
 }
 
+
+G4double DetectorConstruction::getLongestScintHalfLength()
+{
+   if(USE_MINERVA_STRIPS) {
+      Double_t fullLength=SCINT_X_STRIP_LENGTH_M*m;
+      if(SCINT_Y_STRIP_LENGTH_M*m>fullLength)
+	 fullLength=SCINT_Y_STRIP_LENGTH_M*m;
+      Double_t otherLength=((SCINT_X_NUM_STRIPS+1)/2.)*SCINT_TRIANGLE_BASE_MM*mm;
+      if(otherLength>fullLength) fullLength=otherLength;
+      otherLength=((SCINT_Y_NUM_STRIPS+1)/2.)*SCINT_TRIANGLE_BASE_MM*mm;
+      if(otherLength>fullLength) fullLength=otherLength;
+      return (fullLength/2.);
+   }
+
+   return (this->getScintPlaneLength()/2.);
+
+}

@@ -60,6 +60,7 @@ class DetectorConstruction : public G4VUserDetectorConstruction
   G4int getNumScintTrianglesY() {return fNumScintTrianglesY;}
   G4double getScintPlaneGap() {return fScintPlaneGap;}
   G4double getScintPlaneLength() {return fScintPlaneLength;}
+   G4double getLongestScintHalfLength();
   G4double getScintPlaneWidth() {return fScintPlaneWidth;}
   G4int getRotate90() {return fRotate90;}
   G4int getTotNumScintStrips() {return fTotNumScintStrips;}

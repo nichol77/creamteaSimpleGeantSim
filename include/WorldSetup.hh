@@ -18,6 +18,7 @@ class WorldSetup : public TObject
   virtual ~WorldSetup();
 
    Int_t minervaStrips; ///< Rectangular or toblerone strips   
+  Double_t muonGenerationArea; ///< The area (in m^2) over which the muons were generated
    Double_t worldSize; ///< Size of world in m
    Double_t scintLength; ///< Length of square scintillator planes in m
    Int_t planesPerSide; ///< Number of scintillator planes per side

@@ -24,6 +24,9 @@ class DataInput
   G4bool CreateNtuple, KillTracking;
   G4double KillTrackingEnergy;
   G4String NtupleName;
+   G4double muonGenerationArea;
+   G4double scintSideLength;
+   G4double scintPlaneWidth;
 
   
 };

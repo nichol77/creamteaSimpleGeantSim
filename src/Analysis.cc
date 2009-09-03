@@ -92,11 +92,12 @@ void Analysis::book(){
   if(Data->CreateNtuple){
     //This is a nasty hack but will do for now.
     WorldSetup *myWorld = new WorldSetup();
+    myWorld->muonGenerationArea=Data->muonGenerationArea;
     myWorld->worldSize=WORLD_SIZE;
-    myWorld->scintLength=SIDELENGTH;
+    myWorld->scintLength=Data->scintSideLength*0.001; //Assume it's in mm
     myWorld->planesPerSide=PLANES_PER_SIDE;
     myWorld->stripsPerPlane=STRIPS_PER_PLANE;
-    myWorld->planeWidth=PLANE_WIDTH_CM*0.01; ///Convert to m
+    myWorld->planeWidth=Data->scintPlaneWidth*0.001; //Assume it is in mm
     myWorld->gapBetweenPlanes=GAP_BETWEEN_PLANES_CM*0.01;
     myWorld->background=BACKGROUND;
     myWorld->sphereRadius=SPHERE_RADIUS_CM*0.01;

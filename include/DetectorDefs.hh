@@ -1,5 +1,9 @@
 #ifndef DETECTORDEFS_HH
 #define DETECTORDEFS_HH
+// At some point all of this will move into a steering file that feeds in
+// to the static DataInput class and can then be changed without having 
+// to recompile.
+
 
 //Size of the world
 #define WORLD_SIZE 15
@@ -8,8 +12,6 @@
 #define VERTICAL_SEPARATION 13
 // Long side length given in m
 #define SIDELENGTH 13
-// Short side length given in m
-#define SHORT_SIDELENGTH 3
 //Number of planes per detector stack
 #define PLANES_PER_SIDE 8
 //Number of strips per plane
@@ -19,9 +21,9 @@
 #define USE_MINERVA_STRIPS 1
 #define SCINT_TRIANGLE_HEIGHT_MM 17
 #define SCINT_TRIANGLE_BASE_MM 33
-#define SCINT_Y_NUM_STRIPS 400
+#define SCINT_Y_NUM_STRIPS 800
 #define SCINT_Y_STRIP_LENGTH_M 13
-#define SCINT_X_NUM_STRIPS 400
+#define SCINT_X_NUM_STRIPS 800
 #define SCINT_X_STRIP_LENGTH_M 13
 
 
@@ -30,7 +32,6 @@
 
 //Plane width in cm
 #define PLANE_WIDTH_CM 1
-
 //Rotate each plane by 90??
 #define ROTATE_EVERY_PLANE 1
 
