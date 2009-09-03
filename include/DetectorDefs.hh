@@ -38,8 +38,8 @@
 #define FAKE_CONTAINER 1 // Whether to simulate a fake box container or not
 #define CONTAINER 0 // Whether to include the container or not
 #define BACKGROUND 0 // background if true only, don't simulate target
-#define WATER_TANK 1
-#define STEEL_BOX 1
+#define WATER_TANK 0
+#define STEEL_BOX 0
 #define SPHERE_RADIUS_CM 10
 #define SPHERE_DENSITY_KG_M3 19050
 #define SPHERE_X_M 0.5
