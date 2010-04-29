@@ -29,6 +29,7 @@
 //
 
 #include "CosmicRayFluxParticleSource.hh"
+#include "G4Geantino.hh"
 #include "DetectorConstruction.hh"
 #include "G4Event.hh"
 #include "G4SingleParticleSource.hh"
