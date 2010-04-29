@@ -51,14 +51,38 @@ CosmicRayFluxParticleSource::CosmicRayFluxParticleSource(DetectorConstruction *d
   G4double planeWidth=fMyDetCon->getScintPlaneWidth();
   G4double planeGap=fMyDetCon->getScintPlaneGap();
   G4int numPlanes=fMyDetCon->getNumScintPlanes();
+
+
+  NumberOfParticlesToBeGenerated = 1;
+  particle_definition = G4Geantino::GeantinoDefinition();
+  G4ThreeVector zero;
+  particle_momentum_direction = G4ParticleMomentum(1,0,0);
+  particle_energy = 1.0*MeV;
+  particle_position = zero;
+  particle_time = 0.0;
+  particle_polarization = zero;
+  particle_charge = 0.0;
+  particle_weight = 1.0;
+
+  biasRndm = new G4SPSRandomGenerator();
+  posGenerator = new G4SPSPosDistribution();
+  posGenerator->SetBiasRndm(biasRndm);
+  angGenerator = new G4SPSAngDistribution();
+  angGenerator->SetPosDistribution(posGenerator);
+  angGenerator->SetBiasRndm(biasRndm);
+  eneGenerator = new G4SPSEneDistribution();
+  eneGenerator->SetBiasRndm(biasRndm);
+
+  // verbosity
+  verbosityLevel = 0;
   
   G4SPSPosDistribution *fPosGenerator = this->GetPosDist();
-  fPosGenerator->SetPosDisType("Plane");
-  fPosGenerator->SetPosDisShape("Square");
+  posGenerator->SetPosDisType("Plane");
+  posGenerator->SetPosDisShape("Square");
   G4double zHeight=(verticalSeparation/2. + (numPlanes-1)*planeGap + numPlanes*planeWidth);
-  fPosGenerator->SetCentreCoords(G4ThreeVector(0,0,zHeight));
-  fPosGenerator->SetHalfX(sideLength/2);
-  fPosGenerator->SetHalfY(sideLength/2);
+  posGenerator->SetCentreCoords(G4ThreeVector(0,0,zHeight));
+  posGenerator->SetHalfX(sideLength/2);
+  posGenerator->SetHalfY(sideLength/2);
   
   G4cout << "Generate at z: " << zHeight << "\thalfwidth " << sideLength/2 << "\n";
 
