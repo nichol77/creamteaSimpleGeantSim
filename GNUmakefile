@@ -86,6 +86,6 @@ visclean:
 	rm -f .DAWN_*
 
 clean::
-	@rm -f ./src/*Cint*
+#@rm -f ./src/*Cint*
 	@rm -f *.so
 
