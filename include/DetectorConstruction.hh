@@ -35,7 +35,7 @@
 #include "globals.hh"
 #include "DataInput.hh"
 #include "TargetVolume.hh"
-#include "G4GDMLParser.hh"
+//#include "G4GDMLParser.hh"
 
 class G4Box;
 class G4Material;
@@ -132,7 +132,7 @@ class DetectorConstruction : public G4VUserDetectorConstruction
 
   // GDMLparser
   //
-  G4GDMLParser parser;
+  //  G4GDMLParser parser;
         
   // Reading and Writing Settings
   //

@@ -14,7 +14,9 @@
 #include <string.h>
 #define G__ANSIHEADER
 #define G__DICTIONARY
-#include "cint/G__ci.h"
+#define G__PRIVATE_GVALUE
+#include "G__ci.h"
+#include "FastAllocString.h"
 extern "C" {
 extern void G__cpp_setup_tagtablesgsCint();
 extern void G__cpp_setup_inheritancesgsCint();
@@ -31,6 +33,9 @@ extern void G__set_cpp_environmentsgsCint();
 #include "TMemberInspector.h"
 #include "../include/ScintHitInfo.hh"
 #include "../include/WorldSetup.hh"
+#include <algorithm>
+namespace std { }
+using namespace std;
 
 #ifndef G__MEMFUNCBODY
 #endif
@@ -39,6 +44,10 @@ extern G__linked_taginfo G__sgsCintLN_TClass;
 extern G__linked_taginfo G__sgsCintLN_TBuffer;
 extern G__linked_taginfo G__sgsCintLN_TMemberInspector;
 extern G__linked_taginfo G__sgsCintLN_TObject;
+extern G__linked_taginfo G__sgsCintLN_vectorlEROOTcLcLTSchemaHelpercOallocatorlEROOTcLcLTSchemaHelpergRsPgR;
+extern G__linked_taginfo G__sgsCintLN_reverse_iteratorlEvectorlEROOTcLcLTSchemaHelpercOallocatorlEROOTcLcLTSchemaHelpergRsPgRcLcLiteratorgR;
+extern G__linked_taginfo G__sgsCintLN_vectorlETVirtualArraymUcOallocatorlETVirtualArraymUgRsPgR;
+extern G__linked_taginfo G__sgsCintLN_reverse_iteratorlEvectorlETVirtualArraymUcOallocatorlETVirtualArraymUgRsPgRcLcLiteratorgR;
 extern G__linked_taginfo G__sgsCintLN_iteratorlEbidirectional_iterator_tagcOTObjectmUcOlongcOconstsPTObjectmUmUcOconstsPTObjectmUaNgR;
 extern G__linked_taginfo G__sgsCintLN_ScintHitInfo;
 extern G__linked_taginfo G__sgsCintLN_WorldSetup;

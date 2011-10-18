@@ -107,14 +107,14 @@ G4VPhysicalVolume* DetectorConstruction::Construct()
   //------------------------------ experimental hall (world volume)
   G4VPhysicalVolume *pvInnerMost=0;
 
-  if(CONTAINER) {
-    //These are the the lines needed to include the container
-    //gpt read in world and target information for gdml file.
-     //    parser.SetOverlapCheck(true);
-    parser.Read(fReadFile);
-    pvWorld = parser.GetWorldVolume();
-    lvWorld = pvWorld->GetLogicalVolume();
-    pvInnerMost=pvWorld;
+  if(0) {
+//     //These are the the lines needed to include the container
+//     //gpt read in world and target information for gdml file.
+//      //    parser.SetOverlapCheck(true);
+//     parser.Read(fReadFile);
+//     pvWorld = parser.GetWorldVolume();
+//     lvWorld = pvWorld->GetLogicalVolume();
+//     pvInnerMost=pvWorld;
   }
   else  { 
     //Only include these lines if we are doing a no-container test

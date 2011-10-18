@@ -46,7 +46,7 @@ LD = g++
 SOFLAGS       = -dynamiclib -single_module -undefined $(UNDEFOPT)
 INTYLIBS      += $(ROOTLIBS) -dylib_file,/System/Library/Frameworks/OpenGL.framework/Versions/A/Libraries/libGL.dylib:/System/Library/Frameworks/OpenGL.framework/Versions/A/Libraries/libGL.dylib
 else 
-INTYLIBS      += $(ROOTLIBS) -lxerces-c -L/usr/X11R6/lib64 -L/usr/lib64
+INTYLIBS      += $(ROOTLIBS)  -L/usr/X11R6/lib64 -L/usr/lib64 -lxerces-c
 endif
 #  ROOTLIBS      := $(filter-out -lNew,$(ROOTLIBS))
 #  ROOTLIBS      := $(filter-out -lThread,$(ROOTLIBS))
