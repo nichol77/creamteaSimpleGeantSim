@@ -48,6 +48,8 @@ void TargetVolume::constructTarget(G4VPhysicalVolume *pvWorld)
   G4String symbol,name;
   G4double density;//, mass_percent;
   G4Element* elFe = new G4Element("Iron", "Fe", 26, 55.85*g/mole);
+A = 106.42*g/mole;
+G4Element* elPb  = new G4Element(name="Lead"  ,symbol="Pb" , Z=46 , A); 
   A = 14.01*g/mole;
   G4Element* elN = new G4Element(name="Nitrogen", symbol="N", Z=7.,A);
   A = 16.00*g/mole;
@@ -55,6 +57,8 @@ void TargetVolume::constructTarget(G4VPhysicalVolume *pvWorld)
   G4Material* steel = new G4Material ("steel", 7800*kg/m3, 1);
   steel->AddElement (elFe, 100*perCent);
   //aproximatation of steel nails.
+G4Material* lead = new G4Material ("lead", 11340*kg/m3, 1);
+lead->AddElement (elPb, 100*perCent);
   density = 1.29*mg/cm3; 
   G4Material *Air = new G4Material("Air", density, 2); //number of components =2
   Air->AddElement(elN, 70*perCent); //mass fraction =70%
@@ -77,7 +81,7 @@ void TargetVolume::constructTarget(G4VPhysicalVolume *pvWorld)
   G4Material *uranium = new G4Material("uranium",SPHERE_DENSITY_KG_M3*kg/m3,1);
   uranium->AddElement(elU,100*perCent);
   
-  
+  if(SPHERE_ON) {
   std::cout << "Adding sphere of radius " << SPHERE_RADIUS_CM << "cm"
 	    << " and density " << SPHERE_DENSITY_KG_M3 << "at\t"
 	    << SPHERE_X_M*m << "," << SPHERE_Y_M*m << "," << SPHERE_Z_M*m 
@@ -89,12 +93,13 @@ void TargetVolume::constructTarget(G4VPhysicalVolume *pvWorld)
 				     360*deg,       // end phi
 				     0,             // start theta
 				     180*deg);      // end theta
-  G4LogicalVolume *lvSphereU = new G4LogicalVolume(sSphereU,uranium,"lvSphereU");
+  G4LogicalVolume *lvSphereU = new G4LogicalVolume(sSphereU, uranium,"lvSphereU");
   if(!WATER_TANK) {
      G4VPhysicalVolume *pvSphereU = new G4PVPlacement (0,G4ThreeVector (SPHERE_X_M*m,SPHERE_Y_M*m,SPHERE_Z_M*m), "pvSphereU",lvSphereU,pvWorld, false,0);        
   }
   else {
      G4VPhysicalVolume *pvSphereU = new G4PVPlacement (0,G4ThreeVector (0,0,0), "pvSphereU",lvSphereU,pvWorld, false,0); 
+  }
   }
   
 }

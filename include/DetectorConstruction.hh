@@ -132,7 +132,7 @@ class DetectorConstruction : public G4VUserDetectorConstruction
 
   // GDMLparser
   //
-  //  G4GDMLParser parser;
+  // G4GDMLParser parser;
         
   // Reading and Writing Settings
   //

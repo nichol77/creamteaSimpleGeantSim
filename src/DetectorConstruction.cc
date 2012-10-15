@@ -107,35 +107,12 @@ G4VPhysicalVolume* DetectorConstruction::Construct()
   //------------------------------ experimental hall (world volume)
   G4VPhysicalVolume *pvInnerMost=0;
 
-  if(0) {
-//     //These are the the lines needed to include the container
-//     //gpt read in world and target information for gdml file.
-//      //    parser.SetOverlapCheck(true);
-//     parser.Read(fReadFile);
-//     pvWorld = parser.GetWorldVolume();
-//     lvWorld = pvWorld->GetLogicalVolume();
-//     pvInnerMost=pvWorld;
-  }
-  else  { 
-    //Only include these lines if we are doing a no-container test
     sWorld = new G4Box("sWorld", Data->WorldX/2, Data->WorldY/2, Data->WorldZ/2);
   
     lvWorld = new G4LogicalVolume(sWorld,	 Air, "lvWorld");
     
     pvWorld = new G4PVPlacement(0, G4ThreeVector(0.0,0.0,0.0), lvWorld, "pvWorld", 0, false, 0);
-    if(FAKE_CONTAINER) {
-       //Add a fake box made of steel
-       G4Box *sFakeContainer_outer = new G4Box("sFakeContainer_outer", (2.44/2)*m,(12.15/2)*m,(2.59/2)*m);
-       G4LogicalVolume *lvFakeContainer_outer = new G4LogicalVolume(sFakeContainer_outer, Fe, "lvFakeContainer_outer");
-       G4VPhysicalVolume *pvFakeContainer_outer = new G4PVPlacement(0, G4ThreeVector(0.0,0.0,0.0), "pvFakeContainer_outer", lvFakeContainer_outer, pvWorld, false, 0);
-       
-       G4Box *sFakeContainer_inner = new G4Box("sFakeContainer_inner", (2.44/2)*m-5*mm,(12.15/2)*m-5*mm,(2.59/2)*m-5*mm);
-       G4LogicalVolume *lvFakeContainer_inner = new G4LogicalVolume(sFakeContainer_inner, Air, "lvFakeContainer_inner");
-       G4VPhysicalVolume *pvFakeContainer_inner = new G4PVPlacement(0, G4ThreeVector(0.0,0.0,0.0), "pvFakeContainer_inner", lvFakeContainer_inner, pvFakeContainer_outer, false, 0);
-       pvInnerMost=pvFakeContainer_inner;
-       
-    }
-  }
+    pvInnerMost = pvWorld;
 
   G4cout << lvWorld->GetName() << "\n";
 
@@ -279,6 +256,43 @@ G4VPhysicalVolume* DetectorConstruction::Construct()
   //--------------------------------------------------------------------
   // Target Addition
   //--------------------------------------------------------------------
+
+  if(LETTER_U) {
+G4Box *sLETTER_U_Left = new G4Box("sLETTER_U_Left", 2.5*cm,10*cm,2.5*cm);
+       G4LogicalVolume *lvLETTER_U_Left = new G4LogicalVolume(sLETTER_U_Left, Fe, "lvLETTER_U_Left");
+       G4VPhysicalVolume *pvLETTER_U_Left = new G4PVPlacement(0, G4ThreeVector(-38*cm,0*m,0*m), "pvLETTER_U_Left", lvLETTER_U_Left, pvInnerMost, false, 0);
+G4Box *sLETTER_U_Bot = new G4Box("sLETTER_U_Bot", 10*cm,2.5*cm,2.5*cm);
+       G4LogicalVolume *lvLETTER_U_Bot = new G4LogicalVolume(sLETTER_U_Bot, Fe, "lvLETTER_U_Bot");
+       G4VPhysicalVolume *pvLETTER_U_Bot = new G4PVPlacement(0, G4ThreeVector(-30*cm,-13*cm,0*m), "pvLETTER_U_Bot", lvLETTER_U_Bot, pvInnerMost, false, 0);
+G4Box *sLETTER_U_Right = new G4Box("sLETTER_U_Right", 2.5*cm,10*cm,2.5*cm);
+       G4LogicalVolume *lvLETTER_U_Right = new G4LogicalVolume(sLETTER_U_Right, Fe, "lvLETTER_U_Right");
+       G4VPhysicalVolume *pvLETTER_U_Right = new G4PVPlacement(0, G4ThreeVector(-22*cm,0*m,0*m), "pvLETTER_U_Right", lvLETTER_U_Right, pvInnerMost, false, 0);
+  }
+  if(LETTER_C) {
+G4Box *sLETTER_C_Top = new G4Box("sLETTER_C_Top", 10*cm,2.5*cm,2.5*cm);
+       G4LogicalVolume *lvLETTER_C_Top = new G4LogicalVolume(sLETTER_C_Top, Pb, "lvLETTER_C_Top");
+       G4VPhysicalVolume *pvLETTER_C_Top = new G4PVPlacement(0, G4ThreeVector(0*m,13*cm,0*m), "pvLETTER_C_Top", lvLETTER_C_Top, pvInnerMost, false, 0);
+G4Box *sLETTER_C_Left = new G4Box("sLETTER_C_Left", 2.5*cm,10*cm,2.5*cm);
+       G4LogicalVolume *lvLETTER_C_Left = new G4LogicalVolume(sLETTER_C_Left, Pb, "lvLETTER_C_Left");
+       G4VPhysicalVolume *pvLETTER_C_Left = new G4PVPlacement(0, G4ThreeVector(-8*cm,0*m,0*m), "pvLETTER_C_Left", lvLETTER_C_Left, pvInnerMost, false, 0);
+G4Box *sLETTER_C_Bot = new G4Box("sLETTER_C_Bot", 10*cm,2.5*cm,2.5*cm);
+       G4LogicalVolume *lvLETTER_C_Bot = new G4LogicalVolume(sLETTER_C_Bot, Pb, "lvLETTER_C_Bot");
+       G4VPhysicalVolume *pvLETTER_C_Bot = new G4PVPlacement(0, G4ThreeVector(0*m,-13*cm,0*m), "pvLETTER_C_Bot", lvLETTER_C_Bot, pvInnerMost, false, 0);
+  }
+  if(LETTER_L) {
+G4Box *sLETTER_L_Left = new G4Box("sLETTER_L_Left", 2.5*cm,10*cm,2.5*cm);
+       G4LogicalVolume *lvLETTER_L_Left = new G4LogicalVolume(sLETTER_L_Left, U, "lvLETTER_L_Left");
+       G4VPhysicalVolume *pvLETTER_L_Left = new G4PVPlacement(0, G4ThreeVector(22*cm,0*m,0*m), "pvLETTER_L_Left", lvLETTER_L_Left, pvInnerMost, false, 0);
+G4Box *sLETTER_L_Bot = new G4Box("sLETTER_L_Bot", 10*cm,2.5*cm,2.5*cm);
+       G4LogicalVolume *lvLETTER_L_Bot = new G4LogicalVolume(sLETTER_L_Bot, U, "lvLETTER_L_Bot");
+       G4VPhysicalVolume *pvLETTER_L_Bot = new G4PVPlacement(0, G4ThreeVector(30*cm,-13*cm,0*m), "pvLETTER_L_Bot", lvLETTER_L_Bot, pvInnerMost, false, 0);
+  }
+
+if(TEST_BOX) {
+G4Box *sTestBox_outer = new G4Box("sTestBox_outer",50*cm,50*cm,2.5*cm);
+       G4LogicalVolume *lvTestBox_outer = new G4LogicalVolume(sTestBox_outer, U, "lvTestBox_outer");
+       G4VPhysicalVolume *pvTestBox_outer = new G4PVPlacement(0, G4ThreeVector(0*m,0*m,TEST_BOX_HEIGHT*m), "pvTestBox_outer", lvTestBox_outer, pvInnerMost, false, 0);
+}
 
     if(STEEL_BOX) {
        //Add a box made of steel
