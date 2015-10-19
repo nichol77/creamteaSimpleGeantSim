@@ -165,35 +165,49 @@ double getTheta() {
 
 void plotMomentumSpectrum()
 {
-  TCanvas *can = new TCanvas("can","can");
+  TCanvas *can = new TCanvas("can","can",850,600);
   can->SetLogy();
   can->SetLogx();
   TF1 *funcy = new TF1("funcy",funcGuanMomentum,0.1,10000,1);
   funcy->SetNpx(10000);
   funcy->SetParameter(0,0);
-  funcy->DrawClone("");
+  funcy->SetLineStyle(1);
+  TF1 *orig = (TF1*) funcy->DrawClone("");
+  orig->GetXaxis()->SetTitle("Energy (GeV)");
+  orig->GetYaxis()->SetTitle("Flux (arb. units)");
+  orig->SetTitle("");
+   
+  TLegend *leggy = new TLegend(0.7,0.5,0.9,0.85);
+  leggy->SetBorderSize(0);
+  leggy->SetFillColor(0);
+  leggy->SetFillStyle(0);
+  leggy->AddEntry(orig,"0#circ","l");
+
+  char tag[20];
   for(int deg=10;deg<90;deg+=10) {
     funcy->SetParameter(0,deg*TMath::DegToRad());
     funcy->SetLineColor(getNiceColour(deg/10));
-    funcy->DrawClone("same");
+    TF1 *thisOne = (TF1*) funcy->DrawClone("same");
+    sprintf(tag,"%d#circ",deg);
+    leggy->AddEntry(thisOne,tag,"l");
   }
+  leggy->Draw();
 
-
-  TH1F *histEnergy = new TH1F("histEnergy","histEnergy",1000,0.1,1000);
-  TH1F *histAngle = new TH1F("histAngle","histAngle",90,0,90);
-  Double_t energy,angle;
-  for(int i=0;i<1000;i++) {
-    getMomentumAndAngle(0.1,10000,energy,angle);
-    histEnergy->Fill(energy);
-    //    std::cout << energy << "\t" << angle << "\n";
-    histAngle->Fill(angle*TMath::RadToDeg());
-  }
-  TCanvas *can2 = new TCanvas("can2","can2");
-  can2->Divide(1,2);
-  can2->cd(1);
-  histEnergy->Draw();
-  can2->cd(2);
-  histAngle->Draw();
+ //  TH1F *histEnergy = new TH1F("histEnergy","histEnergy",1000,0.1,1000);
+//   TH1F *histAngle = new TH1F("histAngle","histAngle",90,0,90);
+//   Double_t energy,angle;
+//   for(int i=0;i<1000;i++) {
+//     getMomentumAndAngle(0.1,10000,energy,angle);
+//     histEnergy->Fill(energy);
+//     //    std::cout << energy << "\t" << angle << "\n";
+//     histAngle->Fill(angle*TMath::RadToDeg());
+//   }
+//   TCanvas *can2 = new TCanvas("can2","can2");
+//   can2->Divide(1,2);
+//   can2->cd(1);
+//   histEnergy->Draw();
+//   can2->cd(2);
+//   histAngle->Draw();
       
 
 
